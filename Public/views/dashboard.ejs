@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - MediCare ICU</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <i class="fas fa-heartbeat text-red-500 text-3xl mr-2"></i>
+                    <span class="text-gray-800 text-2xl font-bold">Medi<span class="text-red-500">Care</span> ICU</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Welcome, Johnson Family</span>
+                    <form action="/logout" method="POST">
+                        <button
+                            type="submit"
+                            class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300">
+                            Sign Out
+                        </button>
+                    </form>                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Patient Info Header -->
+    <div class="pt-28 pb-10 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-4xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">John Johnson</h1>
+                        <div class="flex space-x-4 text-sm text-gray-600">
+                            <span><i class="fas fa-hospital-user mr-2"></i>Patient ID: #12345</span>
+                            <span><i class="fas fa-bed mr-2"></i>Room: ICU-203</span>
+                            <span><i class="fas fa-user-md mr-2"></i>Dr. Sarah Smith</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-right">
+                        <div class="text-sm text-gray-600">Status</div>
+                        <div class="text-green-500 font-semibold">Stable</div>
+                    </div>
+                    <button
+                        class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600 transition duration-300">
+                        <i class="fas fa-phone-alt mr-2"></i>Contact Doctor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="py-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-3 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold">Current Vital Signs</h2>
+                        <span class="text-sm text-green-500 flex items-center">
+                            <span class="relative flex h-3 w-3 mr-2">
+                                <span
+                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                            </span>
+                            Live Monitoring
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-6">
+                        <!-- Heart Rate -->
+                        <div class="bg-gradient-to-br from-red-50 to-white p-4 rounded-xl border border-red-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <i class="fas fa-heartbeat text-red-500 text-xl mr-2"></i>
+                                    <span class="text-gray-600">Heart Rate</span>
+                                </div>
+                                <div class="text-2xl font-bold text-red-500">
+                                    <span id="heartRateValue">75</span>
+                                    <span class="text-sm font-normal">BPM</span>
+                                </div>
+                            </div>
+                            <div class="h-24">
+                                <canvas id="heartRateChart"></canvas>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Normal Range: 60-100 BPM</div>
+                        </div>
+
+                        <!-- Blood Oxygen -->
+                        <div class="bg-gradient-to-br from-blue-50 to-white p-4 rounded-xl border border-blue-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <i class="fas fa-lungs text-blue-500 text-xl mr-2"></i>
+                                    <span class="text-gray-600">SpO2</span>
+                                </div>
+                                <div class="text-2xl font-bold text-blue-500">
+                                    <span id="oxygenValue">98</span>
+                                    <span class="text-sm font-normal">%</span>
+                                </div>
+                            </div>
+                            <div class="h-24">
+                                <canvas id="oxygenChart"></canvas>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Normal Range: 95-100%</div>
+                        </div>
+
+                        <!-- Blood Pressure -->
+                        <div class="bg-gradient-to-br from-purple-50 to-white p-4 rounded-xl border border-purple-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <i class="fas fa-stethoscope text-purple-500 text-xl mr-2"></i>
+                                    <span class="text-gray-600">Blood Pressure</span>
+                                </div>
+                                <div class="text-2xl font-bold text-purple-500">
+                                    <span id="bpValue">120/80</span>
+                                    <span class="text-sm font-normal">mmHg</span>
+                                </div>
+                            </div>
+                            <div class="h-24">
+                                <canvas id="bpChart"></canvas>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Normal Range: 90/60 - 120/80 mmHg</div>
+                        </div>
+
+                        <!-- Temperature -->
+                        <div class="bg-gradient-to-br from-orange-50 to-white p-4 rounded-xl border border-orange-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center">
+                                    <i class="fas fa-thermometer-half text-orange-500 text-xl mr-2"></i>
+                                    <span class="text-gray-600">Temperature</span>
+                                </div>
+                                <div class="text-2xl font-bold text-orange-500">
+                                    <span id="tempValue">37.2</span>
+                                    <span class="text-sm font-normal">°C</span>
+                                </div>
+                            </div>
+                            <div class="h-24">
+                                <canvas id="tempChart"></canvas>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-2">Normal Range: 36.5-37.5°C</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Treatment & Medication -->
+                <div class="space-y-8">
+                    <!-- Current Treatment -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-semibold mb-4">Current Treatment</h2>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-blue-50 rounded-lg">
+                                <div class="font-semibold text-blue-800">Post-Surgery Recovery</div>
+                                <div class="text-sm text-gray-600 mt-1">Day 3 of estimated 7 days</div>
+                                <div class="w-full bg-blue-200 rounded-full h-2 mt-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 43%"></div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <div class="font-semibold text-green-800">Physical Therapy</div>
+                                <div class="text-sm text-gray-600 mt-1">Scheduled daily at 10:00 AM</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medication Schedule -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-semibold mb-4">Medication Schedule</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center p-4 bg-yellow-50 rounded-lg">
+                                <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-pills text-yellow-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-semibold text-yellow-800">Amoxicillin</div>
+                                    <div class="text-sm text-gray-600">500mg - Every 8 hours</div>
+                                    <div class="text-sm text-yellow-600">Next dose: 2:30 PM</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-4 bg-purple-50 rounded-lg">
+                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-tablets text-purple-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-semibold text-purple-800">Paracetamol</div>
+                                    <div class="text-sm text-gray-600">1000mg - As needed</div>
+                                    <div class="text-sm text-purple-600">Last dose: 11:45 AM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Updates & Notes -->
+                <div class="space-y-8">
+                    <!-- Doctor's Notes -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-semibold mb-4">Doctor's Notes</h2>
+                        <div class="space-y-4">
+                            <div class="border-l-4 border-blue-500 pl-4">
+                                <div class="text-sm text-gray-600">Today, 9:30 AM</div>
+                                <div class="mt-1">Patient showing good progress post-surgery. Vital signs stable.
+                                    Continue current medication regimen.</div>
+                                <div class="text-sm text-blue-600 mt-2">- Dr. Sarah Smith</div>
+                            </div>
+                            <div class="border-l-4 border-gray-300 pl-4">
+                                <div class="text-sm text-gray-600">Yesterday, 4:15 PM</div>
+                                <div class="mt-1">Physical therapy session completed. Patient able to walk short
+                                    distances with assistance.</div>
+                                <div class="text-sm text-blue-600 mt-2">- Dr. Michael Chen</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h2 class="text-xl font-semibold mb-4">Upcoming Events</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-center p-4 bg-indigo-50 rounded-lg">
+                                <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user-md text-indigo-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-semibold text-indigo-800">Doctor's Round</div>
+                                    <div class="text-sm text-gray-600">Tomorrow, 9:00 AM</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center p-4 bg-pink-50 rounded-lg">
+                                <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-heartbeat text-pink-600"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="font-semibold text-pink-800">ECG Test</div>
+                                    <div class="text-sm text-gray-600">Tomorrow, 11:30 AM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Button -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleChat()"
+            class="bg-red-500 text-white rounded-full p-4 shadow-lg hover:bg-red-600 transition duration-300">
+            <i class="fas fa-robot text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- AI Chat Window (Hidden by default) -->
+    <div id="chatWindow" class="fixed bottom-24 right-6 w-96 bg-white rounded-xl shadow-2xl z-50 hidden">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-robot text-red-500 mr-2"></i>
+                <span class="font-semibold">MediCare Assistant</span>
+            </div>
+            <button onclick="toggleChat()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="h-96 p-4 overflow-y-auto" id="chatMessages">
+            <!-- Chat messages will be inserted here -->
+            <div class="mb-4">
+                <div class="bg-gray-100 rounded-lg p-3 inline-block">
+                    Hello! I'm your MediCare Assistant. How can I help you today?
+                </div>
+            </div>
+        </div>
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex space-x-2">
+                <input type="text" id="messageInput"
+                    class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:border-red-500"
+                    placeholder="Type your message...">
+                <button onclick="sendMessage()"
+                    class="bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition duration-300">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Initialize charts with smooth animations
+        class VitalSignsMonitor {
+            constructor() {
+                this.charts = {};
+                this.updateInterval = 2000; // Slower update interval (2 seconds)
+                this.dataPoints = 20;
+                this.initialize();
+            }
+
+            initialize() {
+                // Common chart options
+                const commonOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.4,
+                            borderWidth: 2,
+                        }
+                    },
+                    animation: {
+                        duration: 1500
+                    }
+                };
+
+                // Ensure chart elements exist before initializing
+                const chartElements = [
+                    { id: 'heartRateChart', key: 'heartRate', baseValue: 75, color: 'rgb(239, 68, 68)', min: 60, max: 90 },
+                    { id: 'oxygenChart', key: 'oxygen', baseValue: 98, color: 'rgb(59, 130, 246)', min: 94, max: 100 },
+                    { id: 'bpChart', key: 'bp', baseValue: 120, color: 'rgb(147, 51, 234)', min: 90, max: 150 },
+                    { id: 'tempChart', key: 'temp', baseValue: 37.2, color: 'rgb(249, 115, 22)', min: 36, max: 38 }
+                ];
+
+                chartElements.forEach(chart => {
+                    const element = document.getElementById(chart.id);
+                    if (element) {
+                        this.charts[chart.key] = new Chart(element, {
+                            type: 'line',
+                            data: {
+                                labels: Array(this.dataPoints).fill(''),
+                                datasets: [{
+                                    data: Array(this.dataPoints).fill(chart.baseValue),
+                                    borderColor: chart.color,
+                                    backgroundColor: `${chart.color.replace('rgb', 'rgba').replace(')', ', 0.1)')}`,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                ...commonOptions,
+                                scales: {
+                                    ...commonOptions.scales,
+                                    y: { display: false, min: chart.min, max: chart.max }
+                                }
+                            }
+                        });
+                    } else {
+                        console.warn(`Chart element with ID ${chart.id} is missing.`);
+                    }
+                });
+            }
+
+            updateCharts() {
+                // Update Heart Rate
+                this.updateChart('heartRate', 75, 3, document.getElementById('heartRateValue'));
+
+                // Update Oxygen
+                this.updateChart('oxygen', 98, 0.5, document.getElementById('oxygenValue'));
+
+                // Update Blood Pressure
+                const bpChart = this.charts.bp;
+                if (bpChart) {
+                    const newBP = Math.round(120 + (Math.random() * 4 - 2));
+                    const newBPDiastolic = Math.round(80 + (Math.random() * 4 - 2));
+                    bpChart.data.datasets[0].data.push(newBP);
+                    bpChart.data.datasets[0].data.shift();
+                    const bpValueElement = document.getElementById('bpValue');
+                    if (bpValueElement) {
+                        bpValueElement.textContent = `${newBP}/${newBPDiastolic}`;
+                    }
+                    bpChart.update('quiet');
+                }
+
+                // Update Temperature
+                this.updateChart('temp', 37.2, 0.1, document.getElementById('tempValue'), 1);
+            }
+
+            updateChart(chartKey, baseValue, variation, displayElement, decimals = 0) {
+                const chart = this.charts[chartKey];
+                if (chart) {
+                    const newValue = baseValue + (Math.random() * variation * 2 - variation);
+                    chart.data.datasets[0].data.push(newValue);
+                    chart.data.datasets[0].data.shift();
+                    if (displayElement) {
+                        displayElement.textContent = newValue.toFixed(decimals);
+                    }
+                    chart.update('quiet');
+                }
+            }
+
+            start() {
+                this.updateCharts(); // Initial update
+                setInterval(() => this.updateCharts(), this.updateInterval);
+            }
+        }
+
+        // Start monitoring when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const monitor = new VitalSignsMonitor();
+            monitor.start();
+        });
+
+        // Chat functionality
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('hidden');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+
+                // Create user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'mb-4 text-right';
+                userMessage.innerHTML = `
+                    <div class="bg-red-500 text-white rounded-lg p-3 inline-block">
+                        ${message}
+                    </div>
+                `;
+                chatMessages.appendChild(userMessage);
+
+                input.value = '';
+
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = 'mb-4';
+                    aiResponse.innerHTML = `
+                        <div class="bg-gray-100 rounded-lg p-3 inline-block">
+                            I'm processing your message: "${message}"
+                        </div>
+                    `;
+                    chatMessages.appendChild(aiResponse);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+
+</body>
+
+</html>

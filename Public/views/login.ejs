@@ -1,0 +1,157 @@
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>MediCare ICU - Login</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+    </head>
+
+    <body class="bg-gray-50 font-['Montserrat']">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between h-20">
+                    <div class="flex items-center">
+                        <a href="/" class="flex items-center">
+                            <i class="fas fa-heartbeat text-red-500 text-3xl mr-2"></i>
+                            <span class="text-gray-800 text-2xl font-bold">Medi<span class="text-red-500">Care</span>
+                                ICU</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Login Container -->
+        <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-2xl w-full">
+                <div class="relative bg-white shadow-2xl rounded-2xl overflow-hidden flex">
+                    <!-- Login Forms Container -->
+                    <div class="w-full p-8">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-gray-900">Welcome to MediCare ICU</h2>
+                            <p class="mt-2 text-gray-600">Please select your role to access the portal</p>
+                        </div>
+
+                        <!-- Role Selection Tabs -->
+                        <div class="flex border-b mb-8">
+                            <button id="doctorTab"
+                                class="flex-1 py-4 px-6 text-center font-medium focus:outline-none transition-colors duration-300"
+                                onclick="switchTab('doctor')">
+                                <i class="fas fa-user-md mr-2"></i>Doctor Login
+                            </button>
+                            <button id="patientTab"
+                                class="flex-1 py-4 px-6 text-center font-medium focus:outline-none transition-colors duration-300"
+                                onclick="switchTab('patient')">
+                                <i class="fas fa-users mr-2"></i>Patient/Family Login
+                            </button>
+                        </div>
+
+                        <!-- Doctor Login Form -->
+                        <div id="doctorLogin" class="transition-all duration-300">
+                            <form class="space-y-6" method="post" action="/login">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Medical ID</label>
+                                    <input type="text" required
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input type="password" required
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" class="h-4 w-4 text-red-500 border-gray-300 rounded">
+                                        <label class="ml-2 block text-sm text-gray-700">Remember me</label>
+                                    </div>
+                                    <a href="#" class="text-sm text-red-500 hover:text-red-600">Forgot password?</a>
+                                </div>
+                                <button type="submit"
+                                    class="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    Sign in as Doctor
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Patient/Family Login Form -->
+                        <div id="patientLogin" class="hidden transition-all duration-300">
+                            <form class="space-y-6" method="post" action="/login">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Patient ID</label>
+                                    <input type="text" required
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Access Code</label>
+                                    <input type="password" required
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Relationship to Patient</label>
+                                    <select
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500">
+                                        <option>Patient</option>
+                                        <option>Immediate Family</option>
+                                        <option>Legal Guardian</option>
+                                        <option>Authorized Representative</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" required class="h-4 w-4 text-red-500 border-gray-300 rounded">
+                                    <label class="ml-2 block text-sm text-gray-700">I agree to the privacy policy and
+                                        consent to access patient information</label>
+                                </div>
+                                <button type="submit"
+                                    class="w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    Access Patient Portal
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Help Section -->
+                        <div class="text-center mt-8 pt-6 border-t border-gray-200">
+                            <p class="text-gray-600">Need help? Contact our support team</p>
+                            <p class="mt-2">
+                                <i class="fas fa-phone text-red-500 mr-2"></i>
+                                <span class="text-gray-700">(555) 123-4567</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function switchTab(role) {
+                const doctorTab = document.getElementById('doctorTab');
+                const patientTab = document.getElementById('patientTab');
+                const doctorLogin = document.getElementById('doctorLogin');
+                const patientLogin = document.getElementById('patientLogin');
+
+                if (role === 'doctor') {
+                    doctorTab.classList.add('text-red-500', 'border-b-2', 'border-red-500');
+                    patientTab.classList.remove('text-red-500', 'border-b-2', 'border-red-500');
+                    doctorLogin.classList.remove('hidden');
+                    patientLogin.classList.add('hidden');
+                } else {
+                    patientTab.classList.add('text-red-500', 'border-b-2', 'border-red-500');
+                    doctorTab.classList.remove('text-red-500', 'border-b-2', 'border-red-500');
+                    patientLogin.classList.remove('hidden');
+                    doctorLogin.classList.add('hidden');
+                }
+            }
+
+            // Initialize the first tab
+            switchTab('doctor');
+        </script>
+    </body>
+
+    </html>

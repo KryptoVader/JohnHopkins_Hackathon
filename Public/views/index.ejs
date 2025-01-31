@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare ICU - Advanced Patient Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <i class="fas fa-heartbeat text-red-500 text-3xl mr-2"></i>
+                    <span class="text-gray-800 text-2xl font-bold">Medi<span class="text-red-500">Care</span> ICU</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-gray-700 hover:text-red-500 transition duration-300">Features</a>
+                    <a href="#monitoring"
+                        class="text-gray-700 hover:text-red-500 transition duration-300">Monitoring</a>
+                    <a href="#contact" class="text-gray-700 hover:text-red-500 transition duration-300">Contact</a>
+                    <a href="/login"
+                        class="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition duration-300 shadow-md">Patient
+                        Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="pt-28 pb-20 bg-gradient-to-r from-blue-50 via-white to-red-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:flex lg:items-center lg:justify-between">
+                <div class="lg:w-1/2">
+                    <div class="text-left">
+                        <h1 class="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl leading-tight">
+                            Advanced ICU <span class="text-red-500">Patient</span> Monitoring System
+                        </h1>
+                        <p class="mt-6 text-lg text-gray-600 leading-relaxed">
+                            Stay connected with your loved ones through our state-of-the-art ICU monitoring system.
+                            Real-time updates, vital signs monitoring, and instant communication with healthcare
+                            providers.
+                        </p>
+                        <div class="mt-8 flex space-x-4">
+                            <a href="#demo"
+                                class="px-8 py-4 bg-red-500 text-white rounded-full hover:bg-red-600 transition duration-300 shadow-md">
+                                Watch Demo
+                            </a>
+                            <a href="#contact"
+                                class="px-8 py-4 border-2 border-red-500 text-red-500 rounded-full hover:bg-red-50 transition duration-300">
+                                Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-12 lg:mt-0 lg:w-1/2">
+                    <div class="bg-white p-6 rounded-2xl shadow-2xl">
+                        <div class="grid grid-cols-2 gap-4">
+                            <!-- Animated Heart Rate Monitor -->
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-semibold text-gray-700">Heart Rate</span>
+                                    <span class="text-red-500 font-bold">75 BPM</span>
+                                </div>
+                                <canvas id="heartRateChart" height="100"></canvas>
+                            </div>
+                            <!-- Oxygen Level -->
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-semibold text-gray-700">SpO2</span>
+                                    <span class="text-blue-500 font-bold">98%</span>
+                                </div>
+                                <canvas id="oxygenChart" height="100"></canvas>
+                            </div>
+                            <!-- Blood Pressure -->
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-semibold text-gray-700">Blood Pressure</span>
+                                    <span class="text-green-500 font-bold">120/80</span>
+                                </div>
+                                <canvas id="bpChart" height="100"></canvas>
+                            </div>
+                            <!-- Temperature -->
+                            <div class="bg-gray-50 p-4 rounded-xl">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-semibold text-gray-700">Temperature</span>
+                                    <span class="text-orange-500 font-bold">37.2°C</span>
+                                </div>
+                                <canvas id="tempChart" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="bg-white py-12 shadow-inner">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="text-4xl font-bold text-red-500 mb-2">98%</div>
+                <div class="text-gray-600">Patient Satisfaction</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-red-500 mb-2">24/7</div>
+                <div class="text-gray-600">Real-time Monitoring</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-red-500 mb-2">100+</div>
+                <div class="text-gray-600">Healthcare Partners</div>
+            </div>
+            <div class="text-center">
+                <div class="text-4xl font-bold text-red-500 mb-2">50k+</div>
+                <div class="text-gray-600">Patients Monitored</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900">
+                    Comprehensive Patient Care Features
+                </h2>
+                <div class="w-24 h-1 bg-red-500 mx-auto mt-4"></div>
+            </div>
+            <div class="grid gap-8 grid-cols-1 md:grid-cols-3">
+                <div
+                    class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-heartbeat text-2xl text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Vital Signs Monitoring</h3>
+                    <p class="text-gray-600">Real-time tracking of heart rate, blood pressure, oxygen levels, and other
+                        critical vital signs.</p>
+                </div>
+                <div
+                    class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-robot text-2xl text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">AI Health Assistant</h3>
+                    <p class="text-gray-600">24/7 intelligent chatbot support providing updates and answering medical
+                        queries.</p>
+                </div>
+                <div
+                    class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:-translate-y-1">
+                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                        <i class="fas fa-user-md text-2xl text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Doctor Communication</h3>
+                    <p class="text-gray-600">Secure messaging system to communicate with healthcare providers and
+                        receive updates.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Monitoring Dashboard Preview -->
+    <div id="monitoring" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900">Advanced Monitoring Dashboard</h2>
+                <div class="w-24 h-1 bg-red-500 mx-auto mt-4"></div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Real-time Vitals Panel -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900">Real-time Vitals</h3>
+                    <div class="space-y-4">
+                        <!-- ECG Monitor -->
+                        <div class="bg-black p-4 rounded-xl">
+                            <canvas id="ecgMonitor" height="150" class="w-full"></canvas>
+                        </div>
+                        <!-- Vital Stats -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <div class="text-sm text-gray-600">Heart Rate</div>
+                                <div class="text-xl font-bold text-red-500">75 BPM</div>
+                            </div>
+                            <div class="bg-gray-50 p-3 rounded-lg">
+                                <div class="text-sm text-gray-600">Blood Pressure</div>
+                                <div class="text-xl font-bold text-red-500">120/80</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medication Schedule -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900">Medication Schedule</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-pills text-blue-500"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="font-semibold">Amoxicillin</div>
+                                <div class="text-sm text-gray-600">Next dose: 2:30 PM</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-syringe text-green-500"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="font-semibold">Insulin</div>
+                                <div class="text-sm text-gray-600">Next dose: 4:00 PM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Charts -->
+                <div class="bg-white p-6 rounded-2xl shadow-lg">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-900">Progress Charts</h3>
+                    <div class="space-y-4">
+                        <canvas id="progressChart" height="200"></canvas>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center">
+                                <div class="text-sm text-gray-600">Recovery Progress</div>
+                                <div class="text-2xl font-bold text-green-500">78%</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm text-gray-600">Est. Discharge</div>
+                                <div class="text-2xl font-bold text-blue-500">5 Days</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Button -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleChat()"
+            class="bg-red-500 text-white rounded-full p-4 shadow-lg hover:bg-red-600 transition duration-300">
+            <i class="fas fa-robot text-2xl"></i>
+        </button>
+    </div>
+
+    <!-- AI Chat Window (Hidden by default) -->
+    <div id="chatWindow" class="fixed bottom-24 right-6 w-96 bg-white rounded-xl shadow-2xl z-50 hidden">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+            <div class="flex items-center">
+                <i class="fas fa-robot text-red-500 mr-2"></i>
+                <span class="font-semibold">MediCare Assistant</span>
+            </div>
+            <button onclick="toggleChat()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="h-96 p-4 overflow-y-auto" id="chatMessages">
+            <!-- Chat messages will be inserted here -->
+            <div class="mb-4">
+                <div class="bg-gray-100 rounded-lg p-3 inline-block">
+                    Hello! I'm your MediCare Assistant. How can I help you today?
+                </div>
+            </div>
+        </div>
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex space-x-2">
+                <input type="text" id="messageInput"
+                    class="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:border-red-500"
+                    placeholder="Type your message...">
+                <button onclick="sendMessage()"
+                    class="bg-red-500 text-white rounded-full p-2 hover:bg-red-600 transition duration-300">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center mb-6">
+                        <i class="fas fa-heartbeat text-red-500 text-3xl mr-2"></i>
+                        <span class="text-2xl font-bold">MediCare ICU</span>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed">
+                        Transforming ICU patient care through advanced monitoring technology and real-time
+                        communication.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#features"
+                                class="text-gray-400 hover:text-red-500 transition duration-300">Features</a></li>
+                        <li><a href="#monitoring"
+                                class="text-gray-400 hover:text-red-500 transition duration-300">Monitoring</a></li>
+                        <li><a href="#contact"
+                                class="text-gray-400 hover:text-red-500 transition duration-300">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-red-500 mr-2"></i>
+                            <span class="text-gray-400">support@medicare-icu.com</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-red-500 mr-2"></i>
+                            <span class="text-gray-400">(555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-location-dot text-red-500 mr-2"></i>
+                            <span class="text-gray-400">123 Medical Center Drive</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-12 pt-8 border-t border-gray-800 text-center">
+                <p class="text-gray-400">&copy; 2024 MediCare ICU. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Heart Rate Chart Animation
+        const heartRateCtx = document.getElementById('heartRateChart').getContext('2d');
+        const heartRateChart = new Chart(heartRateCtx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    data: Array(20).fill(75),
+                    borderColor: 'rgb(239, 68, 68)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false, min: 60, max: 90 }
+                },
+                animation: false
+            }
+        });
+
+        // ECG Monitor Animation
+        const ecgCtx = document.getElementById('ecgMonitor').getContext('2d');
+        const ecgChart = new Chart(ecgCtx, {
+            type: 'line',
+            data: {
+                labels: Array(100).fill(''),
+                datasets: [{
+                    data: Array(100).fill(0),
+                    borderColor: 'rgb(366, 0, 0)',
+                    borderWidth: 2,
+                    tension: 0,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false, min: -2, max: 2 }
+                },
+                animation: false
+            }
+        });
+
+        // SpO2 Chart
+        const oxygenCtx = document.getElementById('oxygenChart').getContext('2d');
+        const oxygenChart = new Chart(oxygenCtx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    data: Array(20).fill(98),
+                    borderColor: 'rgb(59, 130, 246)', // Blue color
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false, min: 90, max: 100 }
+                },
+                animation: false
+            }
+        });
+
+        // Blood Pressure Chart
+        const bpCtx = document.getElementById('bpChart').getContext('2d');
+        const bpChart = new Chart(bpCtx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    data: Array(20).fill(120),
+                    borderColor: 'rgb(34, 197, 94)', // Green color
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false, min: 90, max: 150 }
+                },
+                animation: false
+            }
+        });
+
+        // Temperature Chart
+        const tempCtx = document.getElementById('tempChart').getContext('2d');
+        const tempChart = new Chart(tempCtx, {
+            type: 'line',
+            data: {
+                labels: Array(20).fill(''),
+                datasets: [{
+                    data: Array(20).fill(37.2),
+                    borderColor: 'rgb(249, 115, 22)', // Orange color
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: { display: false, min: 35, max: 39 }
+                },
+                animation: false
+            }
+        });
+
+
+        // Progress Chart
+        const progressCtx = document.getElementById('progressChart').getContext('2d');
+        new Chart(progressCtx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Recovery Progress',
+                    data: [45, 52, 58, 63, 70, 75, 78],
+                    borderColor: 'rgb(34, 197, 94)',
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { min: 0, max: 100 }
+                }
+            }
+        });
+
+        // Animate ECG
+        function generateECGPoint() {
+            const t = Date.now() / 1000;
+            return Math.sin(t * 10) * Math.exp(-Math.pow((t % 1) * 5 - 2, 2));
+        }
+
+        // Update animations
+        setInterval(() => {
+            // Update Heart Rate
+            const newHeartRate = heartRateChart.data.datasets[0].data;
+            newHeartRate.push(75 + Math.random() * 5);
+            newHeartRate.shift();
+            heartRateChart.update();
+
+            // Update SpO2
+            const newOxygen = oxygenChart.data.datasets[0].data;
+            newOxygen.push(98 + Math.random() * 1);
+            newOxygen.shift();
+            oxygenChart.update();
+
+            // Update Blood Pressure
+            const newBP = bpChart.data.datasets[0].data;
+            newBP.push(120 + Math.random() * 8);
+            newBP.shift();
+            bpChart.update();
+
+            // Update Temperature
+            const newTemp = tempChart.data.datasets[0].data;
+            newTemp.push(37.2 + Math.random() * 0.3);
+            newTemp.shift();
+            tempChart.update();
+
+            // Update ECG
+            const newECG = ecgChart.data.datasets[0].data;
+            newECG.push(generateECGPoint());
+            newECG.shift();
+            ecgChart.update();
+        }, 50);
+
+        // Chat functionality
+        function toggleChat() {
+            const chatWindow = document.getElementById('chatWindow');
+            chatWindow.classList.toggle('hidden');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (message) {
+                const chatMessages = document.getElementById('chatMessages');
+
+                // Create user message
+                const userMessage = document.createElement('div');
+                userMessage.className = 'mb-4 text-right';
+                userMessage.innerHTML = `
+                    <div class="bg-red-500 text-white rounded-lg p-3 inline-block">
+                        ${message}
+                    </div>
+                `;
+                chatMessages.appendChild(userMessage);
+
+                input.value = '';
+
+                // Simulate AI response
+                setTimeout(() => {
+                    const aiResponse = document.createElement('div');
+                    aiResponse.className = 'mb-4';
+                    aiResponse.innerHTML = `
+                        <div class="bg-gray-100 rounded-lg p-3 inline-block">
+                            I'm processing your message: "${message}"
+                        </div>
+                    `;
+                    chatMessages.appendChild(aiResponse);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000);
+
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+
+</html>
