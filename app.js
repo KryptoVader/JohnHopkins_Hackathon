@@ -21,14 +21,14 @@ app.use(cors());
 
 
 const postgresPool = new Pool({
-    host: process.env.POSTGRES_HOST,
-    user: process.env.POSTGRES_USER,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DATABASE,
-    port: process.env.POSTGRES_PORT,
-    max: 10, // Max connections in the pool
-    idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-  });
+  host: process.env.POSTGRES_HOST,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DATABASE,
+  port: process.env.POSTGRES_PORT,
+  max: 10, // Max connections in the pool
+  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
+});
 
 // Test the database connection
 postgresPool.connect()
@@ -52,31 +52,68 @@ app.use(express.json());
 app.set("views", path.join(__dirname, "Public", "views"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/admin', async (req,res) => {
-    res.render('Admin_login')
+app.get('/admin', async (req, res) => {
+  res.render('Admin_login')
 });
 
-app.get('/', async (req,res) => {
-    res.render('index');
+app.post('/admin', async (req, res) => {
+  let client;
+  try {
+    const { username, password } = req.body;
+
+    // Get a client from the pool
+    client = await postgresPool.connect();
+
+    // Query to check if admin exists
+    const result = await client.query('SELECT * FROM admins WHERE TRIM(username) = $1', [username]);
+
+    if (result.rows.length > 0) {
+      const admin = result.rows[0];
+
+      // Check if the password matches
+      if (admin.password === password) {
+        // Authentication success
+        res.render("Admin");
+      } else {
+        // Password mismatch
+        res.status(401).send('Invalid password');
+      }
+    } else {
+      // Admin not found
+      res.status(404).send('Admin not found');
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).send('Internal Server Error');
+  } finally {
+    // Make sure to release the client back to the pool
+    if (client) {
+      client.release();
+    }
+  }
+});
+
+app.get('/', async (req, res) => {
+  res.render('index');
 })
 
-app.get('/login', async (req,res) => {
-    res.render('login')
-})  
+app.get('/login', async (req, res) => {
+  res.render('login')
+})
 
-app.post('/login',(req,res) => {
-    const { medicalId, password } = req.body; // For Doctor Login
-    const { patientId, accessCode } = req.body; // For Patient Login
+app.post('/login', (req, res) => {
+  const { medicalId, password } = req.body; // For Doctor Login
+  const { patientId, accessCode } = req.body; // For Patient Login
 
-    console.log('Form submitted:', req.body);
-    res.render('dashboard')
+  console.log('Form submitted:', req.body);
+  res.render('dashboard')
 })
 
 app.post('/logout', (req, res) => {
-    res.redirect('/');
+  res.redirect('/');
 });
 
 // Start Server
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });
