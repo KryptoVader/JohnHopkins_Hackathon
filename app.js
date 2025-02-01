@@ -3,8 +3,7 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import bcrypt from 'bcrypt';
-import mysql from 'mysql2/promise';
+import pg from 'pg';
 import neo4j from 'neo4j-driver';
 import { fileURLToPath } from "url";
 
@@ -15,21 +14,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
+const { Pool } = pg;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
 
-// // MySQL Database Connection
-// const mysqlPool = mysql.createPool({
-//   host: process.env.MYSQL_HOST,
-//   user: process.env.MYSQL_USER,
-//   password: process.env.MYSQL_PASSWORD,
-//   database: process.env.MYSQL_DATABASE,
-//   waitForConnections: true,
-//   connectionLimit: 10,
-// });
+const postgresPool = new Pool({
+    host: process.env.POSTGRES_HOST,
+    user: process.env.POSTGRES_USER,
+    password: process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DATABASE,
+    port: process.env.POSTGRES_PORT,
+    max: 10, // Max connections in the pool
+    idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
+  });
+
+// Test the database connection
+postgresPool.connect()
+  .then(client => {
+    console.log("Connected to PostgreSQL!");
+    client.release(); // Release the connection back to the pool
+  })
+  .catch(err => console.error("Error connecting to PostgreSQL:", err));
 
 // // Neo4j Database Connection
 // const neo4jDriver = neo4j.driver(
@@ -44,6 +51,10 @@ app.use(express.static(path.join(__dirname, "Public")));
 app.use(express.json());
 app.set("views", path.join(__dirname, "Public", "views"));
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get('/admin', async (req,res) => {
+    res.render('Admin_login')
+});
 
 app.get('/', async (req,res) => {
     res.render('index');

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare ICU - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f6f7ff 0%, #ffffff 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-20">
+                <div class="flex justify-between h-20">
+                    <div class="flex items-center space-x-4">
+                        <div class="relative pulse-ring rounded-full p-2">
+                            <i class="fas fa-heartbeat text-red-500 text-3xl"></i>
+                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                        </div>
+                        <div class="text-gray-800 text-2xl font-extrabold tracking-tight">
+                            Medi<span class="text-red-500">Care</span>
+                            <span class="text-sm font-medium bg-red-50 text-red-500 px-2 py-1 rounded-full ml-2">ICU Portal</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-600">Welcome, Admin</span>
+                    </div>
+                    <button class="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-28 pb-20">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Dashboard Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+                <p class="text-gray-600 mt-2">Manage doctor and patient credentials</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Total Doctors</p>
+                            <h3 class="text-2xl font-bold text-gray-800">42</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-md text-blue-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Active Patients</p>
+                            <h3 class="text-2xl font-bold text-gray-800">156</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-hospital-user text-green-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">Today's Registrations</p>
+                            <h3 class="text-2xl font-bold text-gray-800">12</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-clipboard-list text-purple-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm">System Status</p>
+                            <h3 class="text-2xl font-bold text-green-500">Active</h3>
+                        </div>
+                        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Doctor Registration -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Create Doctor Account</h2>
+                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user-md text-blue-500"></i>
+                        </div>
+                    </div>
+                    <form id="doctorForm" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Doctor Name</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required placeholder="Enter doctor's full name">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Specialization</label>
+                            <select class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required>
+                                <option value="">Select Specialization</option>
+                                <option value="cardiology">Cardiology</option>
+                                <option value="neurology">Neurology</option>
+                                <option value="pulmonology">Pulmonology</option>
+                                <option value="critical-care">Critical Care</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Medical ID</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="doctorId" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
+                                <button type="button" onclick="generateDoctorId()" class="bg-blue-500 text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                                    <i class="fas fa-sync-alt mr-2"></i>Generate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Password</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="doctorPassword" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
+                                <button type="button" onclick="generatePassword()" class="bg-blue-500 text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                                    <i class="fas fa-key mr-2"></i>Generate
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-red-500 text-white py-4 rounded-xl hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center space-x-2">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Create Doctor Account</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Patient Registration -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Create Patient Access</h2>
+                        <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-hospital-user text-green-500"></i>
+                        </div>
+                    </div>
+                    <form id="patientForm" class="space-y-6">
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Patient Name</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required placeholder="Enter patient's full name">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Room Number</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required placeholder="Enter room number">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Patient ID</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="patientId" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
+                                <button type="button" onclick="generatePatientId()" class="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                                    <i class="fas fa-sync-alt mr-2"></i>Generate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-gray-700 font-medium">Access Code</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="accessCode" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
+                                <button type="button" onclick="generateAccessCode()" class="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                                    <i class="fas fa-key mr-2"></i>Generate
+                                </button>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-red-500 text-white py-4 rounded-xl hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center space-x-2">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Create Patient Access</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-gray-500">Date</th>
+                                <th class="px-6 py-3 text-left text-gray-500">Action</th>
+                                <th class="px-6 py-3 text-left text-gray-500">Details</th>
+                                <th class="px-6 py-3 text-left text-gray-500">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y">
+                            <tr>
+                                <td class="px-6 py-4">2024-02-01</td>
+                                <td class="px-6 py-4">Doctor Account Created</td>
+                                <td class="px-6 py-4">Dr. Smith - Cardiology</td>
+                                <td class="px-6 py-4"><span class="text-green-500">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4">2024-02-01</td>
+                                <td class="px-6 py-4">Patient Access Created</td>
+                                <td class="px-6 py-4">John Doe - Room 302</td>
+                                <td class="px-6 py-4"><span class="text-green-500">Success</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateDoctorId() {
+            const prefix = 'DOC';
+            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            document.getElementById('doctorId').value = `${prefix}${random}`;
+        }
+
+        function generatePatientId() {
+            const prefix = 'PAT';
+            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+            document.getElementById('patientId').value = `${prefix}${random}`;
+        }
+
+        function generatePassword() {
+            const length = 10;
+            const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+            let password = '';
+            for (let i = 0; i < length; i++) {
+                password += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            document.getElementById('doctorPassword').value = password;
+        }
+
+        function generateAccessCode() {
+            const length = 6;
+            const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let code = '';
+            for (let i = 0; i < length; i++) {
+                code += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            document.getElementById('accessCode').value = code;
+        }
+
+        // Form submission handlers
+        document.getElementById('doctorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Doctor account created successfully!');
+        });
+
+        document.getElementById('patientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Patient access created successfully!');
+        });
+    </script>
+</body>
+</html>

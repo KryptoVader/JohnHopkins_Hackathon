@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediCare ICU - Admin Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-red-50 via-white to-blue-50">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\'30\' height=\'30\' viewBox=\'0 0 30 30\' fill=\'none\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M1.22676 0C1.91374 0 2.45351 0.539773 2.45351 1.22676C2.45351 1.91374 1.91374 2.45351 1.22676 2.45351C0.539773 2.45351 0 1.91374 0 1.22676C0 0.539773 0.539773 0 1.22676 0Z\' fill=\'rgba(0,0,0,0.07)\'/%3E%3C/svg%3E')"></div>
+    </div>
+
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4">
+        <!-- Logo and Navigation -->
+        <nav class="absolute top-0 w-full max-w-7xl mx-auto px-4 py-6">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <div class="relative">
+                        <i class="fas fa-heartbeat text-red-500 text-3xl mr-2 animate-pulse"></i>
+                        <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                    </div>
+                    <span class="text-gray-800 text-2xl font-bold">Medi<span class="text-red-500">Care</span> ICU</span>
+                </div>
+                <a href="#" class="text-gray-600 hover:text-red-500 transition-colors duration-300">Need Help?</a>
+            </div>
+        </nav>
+
+        <!-- Login Card -->
+        <div class="w-full max-w-md">
+            <div class="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden">
+                <!-- Login Header -->
+                <div class="px-8 pt-8 pb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 text-center">Admin Login</h2>
+                    <p class="mt-2 text-sm text-gray-600 text-center">Access the administrative dashboard</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="px-8 pb-8 space-y-6">
+                    <!-- Username Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Username</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="text" 
+                                required
+                                class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                                placeholder="Enter your username"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400"></i>
+                            </div>
+                            <input 
+                                type="password" 
+                                required
+                                class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                                placeholder="Enter your password"
+                            >
+                            <button 
+                                type="button"
+                                onclick="togglePassword(this)"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                            >
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me & Forgot Password -->
+                    <div class="flex items-center justify-between">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-red-500 border-gray-300 rounded focus:ring-red-500">
+                            <span class="text-sm text-gray-600">Remember me</span>
+                        </label>
+                        <a href="#" class="text-sm text-red-500 hover:text-red-600 transition-colors duration-300">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button 
+                        type="submit"
+                        class="w-full bg-red-500 text-white py-3 rounded-xl hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center space-x-2"
+                    >
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login to Dashboard</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Security Notice -->
+            <div class="mt-6 text-center">
+                <p class="text-sm text-gray-600 flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-gray-400 mr-2"></i>
+                    Secured by MediCare ICU Security Protocol
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(button) {
+            const input = button.parentElement.querySelector('input');
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Add your login logic here
+            window.location.href = '/admin-dashboard.html';
+        });
+    </script>
+</body>
+</html>
