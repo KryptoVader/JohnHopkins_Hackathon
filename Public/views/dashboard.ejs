@@ -56,8 +56,7 @@
                 <div class="flex items-center space-x-4">
                     <span class="text-gray-600">Welcome, Johnson Family</span>
                     <form action="/logout" method="POST">
-                        <button
-                            type="submit"
+                        <button type="submit"
                             class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300">
                             Sign Out
                         </button>
@@ -107,8 +106,7 @@
                         <h2 class="text-xl font-semibold">Current Vital Signs</h2>
                         <span class="text-sm text-green-500 flex items-center">
                             <span class="relative flex h-3 w-3 mr-2">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                             </span>
                             Live Monitoring
@@ -328,17 +326,16 @@
         </div>
     </div>
     <script>
-        // Initialize charts with smooth animations
+        // VitalSignsMonitor now fetches live data from the microcontroller endpoint
         class VitalSignsMonitor {
             constructor() {
                 this.charts = {};
-                this.updateInterval = 2000; // Slower update interval (2 seconds)
+                this.updateInterval = 2000; // 2 seconds update interval
                 this.dataPoints = 20;
                 this.initialize();
             }
 
             initialize() {
-                // Common chart options
                 const commonOptions = {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -360,9 +357,8 @@
                     }
                 };
 
-                // Ensure chart elements exist before initializing
                 const chartElements = [
-                    { id: 'heartRateChart', key: 'heartRate', baseValue: 75, color: 'rgb(239, 68, 68)', min: 60, max: 90 },
+                    { id: 'heartRateChart', key: 'heartRate', baseValue: 75, color: 'rgb(239, 68, 68)', min: 60, max: 100 },
                     { id: 'oxygenChart', key: 'oxygen', baseValue: 98, color: 'rgb(59, 130, 246)', min: 94, max: 100 },
                     { id: 'bpChart', key: 'bp', baseValue: 120, color: 'rgb(147, 51, 234)', min: 90, max: 150 },
                     { id: 'tempChart', key: 'temp', baseValue: 37.2, color: 'rgb(249, 115, 22)', min: 36, max: 38 }
@@ -396,47 +392,56 @@
                 });
             }
 
-            updateCharts() {
-                // Update Heart Rate
-                this.updateChart('heartRate', 75, 3, document.getElementById('heartRateValue'));
-
-                // Update Oxygen
-                this.updateChart('oxygen', 98, 0.5, document.getElementById('oxygenValue'));
-
-                // Update Blood Pressure
-                const bpChart = this.charts.bp;
-                if (bpChart) {
-                    const newBP = Math.round(120 + (Math.random() * 4 - 2));
-                    const newBPDiastolic = Math.round(80 + (Math.random() * 4 - 2));
-                    bpChart.data.datasets[0].data.push(newBP);
-                    bpChart.data.datasets[0].data.shift();
-                    const bpValueElement = document.getElementById('bpValue');
-                    if (bpValueElement) {
-                        bpValueElement.textContent = `${newBP}/${newBPDiastolic}`;
-                    }
-                    bpChart.update('quiet');
+            async fetchPatientData() {
+                try {
+                    const response = await fetch("http://192.168.8.176/patient");
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.error("Error fetching patient data:", error);
+                    return null;
                 }
-
-                // Update Temperature
-                this.updateChart('temp', 37.2, 0.1, document.getElementById('tempValue'), 1);
             }
 
-            updateChart(chartKey, baseValue, variation, displayElement, decimals = 0) {
+            updateChartsWithData(data) {
+                if (!data) return;
+                // Update Heart Rate
+                this.updateChart('heartRate', data.heartRate, document.getElementById('heartRateValue'), 0);
+                // Update Oxygen
+                this.updateChart('oxygen', data.spo2, document.getElementById('oxygenValue'), 0);
+                // Update Blood Pressure display and chart (using systolic value for chart)
+                if (document.getElementById('bpValue')) {
+                    document.getElementById('bpValue').textContent = data.bp;
+                }
+                const systolic = parseFloat(data.bp.split('/')[0]);
+                this.updateChart('bp', systolic, null, 0);
+                // Update Temperature
+                this.updateChart('temp', data.temp, document.getElementById('tempValue'), 1);
+            }
+
+            updateChart(chartKey, newValue, displayElement, decimals) {
                 const chart = this.charts[chartKey];
                 if (chart) {
-                    const newValue = baseValue + (Math.random() * variation * 2 - variation);
                     chart.data.datasets[0].data.push(newValue);
-                    chart.data.datasets[0].data.shift();
+                    if (chart.data.datasets[0].data.length > this.dataPoints) {
+                        chart.data.datasets[0].data.shift();
+                    }
                     if (displayElement) {
-                        displayElement.textContent = newValue.toFixed(decimals);
+                        displayElement.textContent = parseFloat(newValue).toFixed(decimals);
                     }
                     chart.update('quiet');
                 }
             }
 
             start() {
-                this.updateCharts(); // Initial update
-                setInterval(() => this.updateCharts(), this.updateInterval);
+                const updateFunction = async () => {
+                    const data = await this.fetchPatientData();
+                    if (data) {
+                        this.updateChartsWithData(data);
+                    }
+                };
+                updateFunction();
+                setInterval(updateFunction, this.updateInterval);
             }
         }
 
@@ -446,54 +451,129 @@
             monitor.start();
         });
 
-        // Chat functionality
-        function toggleChat() {
-            const chatWindow = document.getElementById('chatWindow');
-            chatWindow.classList.toggle('hidden');
+    //     let socket;
+    
+    //     // Toggle the chat window and establish a WebSocket connection if needed
+    //     function toggleChat() {
+    //         const chatWindow = document.getElementById("chatWindow");
+    //         chatWindow.classList.toggle("hidden");
+    
+    //         // Initialize WebSocket connection if not already open
+    //         if (!socket || socket.readyState !== WebSocket.OPEN) {
+    //             socket = new WebSocket("ws://localhost:8000/ws");
+    
+    //             socket.onopen = () => {
+    //                 console.log("WebSocket connection established.");
+    //             };
+    
+    //             socket.onmessage = (event) => {
+    //                 const messageContainer = document.getElementById("chatMessages");
+    //                 const newMessage = document.createElement("div");
+    //                 newMessage.className = "mb-4";
+    //                 newMessage.innerHTML = `
+    //                     <div class="bg-blue-100 rounded-lg p-3 inline-block">
+    //                         ${event.data}
+    //                     </div>`;
+    //                 messageContainer.appendChild(newMessage);
+    //                 messageContainer.scrollTop = messageContainer.scrollHeight;
+    //             };
+    
+    //             socket.onerror = (error) => {
+    //                 console.error("WebSocket error:", error);
+    //             };
+    
+    //             socket.onclose = () => {
+    //                 console.log("WebSocket connection closed.");
+    //             };
+    //         }
+    //     }
+    
+    //     // Send a message via WebSocket
+    //     function sendMessage() {
+    //         const inputField = document.getElementById("messageInput");
+    //         const message = inputField.value.trim();
+    //         if (message && socket && socket.readyState === WebSocket.OPEN) {
+    //             const messageContainer = document.getElementById("chatMessages");
+                
+    //             // Display the user's message in the chat window
+    //             const userMessage = document.createElement("div");
+    //             userMessage.className = "mb-4 text-right";
+    //             userMessage.innerHTML = `
+    //                 <div class="bg-red-100 rounded-lg p-3 inline-block">
+    //                     ${message}
+    //                 </div>`;
+    //             messageContainer.appendChild(userMessage);
+    //             messageContainer.scrollTop = messageContainer.scrollHeight;
+    
+    //             // Send the message over the WebSocket
+    //             socket.send(message);
+    
+    //             // Clear the input field
+    //             inputField.value = "";
+    //         }
+    //     }
+    
+    //     // Allow sending message with the Enter key
+    //     document.getElementById("messageInput").addEventListener("keypress", function(e) {
+    //         if (e.key === "Enter") {
+    //             sendMessage();
+    //         }
+    //     });
+    // </script>    
+
+<script>
+    let socket;
+
+    function toggleChat() {
+        const chatWindow = document.getElementById("chatWindow");
+        chatWindow.classList.toggle("hidden");
+
+        if (!socket || socket.readyState !== WebSocket.OPEN) {
+            socket = new WebSocket("ws://localhost:8000/chat"); // ✅ Matches FastAPI route
+
+            socket.onopen = () => console.log("✅ WebSocket connected.");
+            socket.onmessage = (event) => {
+                console.log("🔹 Received from server:", event.data);
+                displayMessage(event.data, "ai");
+            };
+            socket.onerror = (error) => console.error("❌ WebSocket Error:", error);
+            socket.onclose = () => console.log("⚠️ WebSocket closed.");
         }
+    }
 
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const message = input.value.trim();
-            if (message) {
-                const chatMessages = document.getElementById('chatMessages');
+    function sendMessage() {
+        const inputField = document.getElementById("messageInput");
+        const message = inputField.value.trim();
 
-                // Create user message
-                const userMessage = document.createElement('div');
-                userMessage.className = 'mb-4 text-right';
-                userMessage.innerHTML = `
-                    <div class="bg-red-500 text-white rounded-lg p-3 inline-block">
-                        ${message}
-                    </div>
-                `;
-                chatMessages.appendChild(userMessage);
-
-                input.value = '';
-
-                // Simulate AI response
-                setTimeout(() => {
-                    const aiResponse = document.createElement('div');
-                    aiResponse.className = 'mb-4';
-                    aiResponse.innerHTML = `
-                        <div class="bg-gray-100 rounded-lg p-3 inline-block">
-                            I'm processing your message: "${message}"
-                        </div>
-                    `;
-                    chatMessages.appendChild(aiResponse);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000);
-
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+        if (message && socket && socket.readyState === WebSocket.OPEN) {
+            console.log("🔹 Sent to server:", message); // ✅ Log sent message
+            displayMessage(message, "user");
+            socket.send(message);
+            inputField.value = "";
+        } else {
+            console.error("❌ WebSocket is not connected!");
         }
+    }
 
-        // Allow sending message with Enter key
-        document.getElementById('messageInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-    </script>
+    function displayMessage(message, sender) {
+        const messageContainer = document.getElementById("chatMessages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className = "mb-4 " + (sender === "user" ? "text-right" : "");
+
+        messageDiv.innerHTML = `
+            <div class="${sender === "user" ? "bg-red-100" : "bg-blue-100"} rounded-lg p-3 inline-block">
+                ${message}
+            </div>
+        `;
+
+        messageContainer.appendChild(messageDiv);
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    document.getElementById("messageInput").addEventListener("keypress", function (e) {
+        if (e.key === "Enter") sendMessage();
+    });
+</script>
 
 </body>
 

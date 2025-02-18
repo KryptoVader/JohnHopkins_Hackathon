@@ -1,292 +1,492 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediCare ICU - Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: linear-gradient(135deg, #f6f7ff 0%, #ffffff 100%);
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-        }
-        .pulse-ring {
-            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediCare Admin Dashboard - Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+    body {
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+      position: relative;
+      background: #fff;
+    }
+
+    .gradient-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+      background: radial-gradient(circle at 50% 50%,
+          rgba(139, 0, 0, 0.2) 0%,
+          #ff6347 50%,
+          #ffffff 100%);
+      background-size: 200% 200%;
+      animation: gradientMove 20s ease-in-out infinite;
+    }
+
+    @keyframes gradientMove {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    aside {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+    }
+
+    .tab-button {
+      cursor: pointer;
+      padding: 0.75rem 1.25rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .tab-button.active {
+      border-bottom: 3px solid #dc2626;
+      color: #dc2626;
+    }
+
+    .tab-button:hover {
+      transform: scale(1.05);
+    }
+
+    label {
+      color: #1f2937;
+      font-weight: 600;
+    }
+
+    input,
+    select {
+      color: #1f2937;
+      background-color: #ffffff;
+    }
+
+    input::placeholder {
+      color: #9ca3af;
+    }
+
+    .form-transition {
+      transition: all 0.3s ease-in-out;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white/80 backdrop-blur-md shadow-lg fixed w-full z-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between h-20">
-                <div class="flex justify-between h-20">
-                    <div class="flex items-center space-x-4">
-                        <div class="relative pulse-ring rounded-full p-2">
-                            <i class="fas fa-heartbeat text-red-500 text-3xl"></i>
-                            <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        </div>
-                        <div class="text-gray-800 text-2xl font-extrabold tracking-tight">
-                            Medi<span class="text-red-500">Care</span>
-                            <span class="text-sm font-medium bg-red-50 text-red-500 px-2 py-1 rounded-full ml-2">ICU Portal</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-gray-600">Welcome, Admin</span>
-                    </div>
-                    <button class="bg-red-500 text-white px-6 py-2 rounded-full hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                    </button>
-                </div>
-            </div>
-        </div>
+
+<body>
+  <div class="gradient-bg"></div>
+
+  <!-- Sidebar -->
+  <aside class="fixed inset-y-0 left-0 w-64 shadow-lg z-50">
+    <div class="flex items-center p-6 border-b">
+      <div class="w-10 h-10 bg-red-600 rounded-lg flex items-center justify-center">
+        <i class="fas fa-hospital text-white text-xl"></i>
+      </div>
+      <div class="ml-3">
+        <h1 class="font-bold text-xl text-red-600">MediCare</h1>
+        <span class="text-xs text-gray-500">Admin Portal</span>
+      </div>
+    </div>
+    <nav class="p-4 space-y-2">
+      <a href="/admin" class="flex items-center p-3 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
+        <i class="fas fa-chart-line mr-2"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#users" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition">
+        <i class="fas fa-users mr-2"></i>
+        <span>User Management</span>
+      </a>
+      <a href="#settings" class="flex items-center p-3 rounded-lg hover:bg-gray-100 transition">
+        <i class="fas fa-cog mr-2"></i>
+        <span>Settings</span>
+      </a>
     </nav>
+  </aside>
 
-    <!-- Main Content -->
-    <div class="pt-28 pb-20">
-        <div class="max-w-7xl mx-auto px-4">
-            <!-- Dashboard Header -->
-            <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-800">Admin Dashboard</h1>
-                <p class="text-gray-600 mt-2">Manage doctor and patient credentials</p>
-            </div>
+  <!-- Main Content -->
+  <main class="ml-64 p-8">
+    <header class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-800">Dashboard Overview</h1>
+        <p class="text-gray-500">Welcome back, Admin</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button class="p-3 rounded-full bg-gray-200 hover:bg-gray-300 transition">
+          <i class="fas fa-bell text-gray-600"></i>
+        </button>
+        <form action="/logout" method="POST">
+          <button class="flex items-center space-x-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </form>
+      </div>
+    </header>
 
-            <!-- Quick Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">Total Doctors</p>
-                            <h3 class="text-2xl font-bold text-gray-800">42</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user-md text-blue-500 text-xl"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">Active Patients</p>
-                            <h3 class="text-2xl font-bold text-gray-800">156</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
-                            <i class="fas fa-hospital-user text-green-500 text-xl"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">Today's Registrations</p>
-                            <h3 class="text-2xl font-bold text-gray-800">12</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
-                            <i class="fas fa-clipboard-list text-purple-500 text-xl"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-500 text-sm">System Status</p>
-                            <h3 class="text-2xl font-bold text-green-500">Active</h3>
-                        </div>
-                        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
-                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Registration Card -->
+    <div id="registrationCard" class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-2xl">
+      <h2 class="text-2xl font-semibold text-center mb-6 text-red-600">
+        User Registration
+      </h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Doctor Registration -->
-                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Create Doctor Account</h2>
-                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user-md text-blue-500"></i>
-                        </div>
-                    </div>
-                    <form id="doctorForm" class="space-y-6">
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Doctor Name</label>
-                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required placeholder="Enter doctor's full name">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Specialization</label>
-                            <select class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required>
-                                <option value="">Select Specialization</option>
-                                <option value="cardiology">Cardiology</option>
-                                <option value="neurology">Neurology</option>
-                                <option value="pulmonology">Pulmonology</option>
-                                <option value="critical-care">Critical Care</option>
-                            </select>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Medical ID</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="doctorId" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
-                                <button type="button" onclick="generateDoctorId()" class="bg-blue-500 text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-                                    <i class="fas fa-sync-alt mr-2"></i>Generate
-                                </button>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Password</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="doctorPassword" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
-                                <button type="button" onclick="generatePassword()" class="bg-blue-500 text-white px-6 py-3 rounded-xl hover:bg-blue-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-                                    <i class="fas fa-key mr-2"></i>Generate
-                                </button>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-red-500 text-white py-4 rounded-xl hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center space-x-2">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Create Doctor Account</span>
-                        </button>
-                    </form>
-                </div>
+      <!-- Tabs -->
+      <div class="flex justify-center border-b mb-6">
+        <button onclick="showForm('doctor')" class="tab-button active">
+          Doctor
+        </button>
+        <button onclick="showForm('staff')" class="tab-button">Staff</button>
+        <button onclick="showForm('patient')" class="tab-button">
+          Patient
+        </button>
+      </div>
 
-                <!-- Patient Registration -->
-                <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-gray-800">Create Patient Access</h2>
-                        <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
-                            <i class="fas fa-hospital-user text-green-500"></i>
-                        </div>
-                    </div>
-                    <form id="patientForm" class="space-y-6">
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Patient Name</label>
-                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required placeholder="Enter patient's full name">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Room Number</label>
-                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" required placeholder="Enter room number">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Patient ID</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="patientId" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
-                                <button type="button" onclick="generatePatientId()" class="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-                                    <i class="fas fa-sync-alt mr-2"></i>Generate
-                                </button>
-                            </div>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="block text-gray-700 font-medium">Access Code</label>
-                            <div class="flex space-x-2">
-                                <input type="text" id="accessCode" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" readonly>
-                                <button type="button" onclick="generateAccessCode()" class="bg-green-500 text-white px-6 py-3 rounded-xl hover:bg-green-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-                                    <i class="fas fa-key mr-2"></i>Generate
-                                </button>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-red-500 text-white py-4 rounded-xl hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center space-x-2">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Create Patient Access</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="mt-8 bg-white p-6 rounded-2xl shadow-lg">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6">Recent Activity</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full">
-                        <thead>
-                            <tr class="bg-gray-50">
-                                <th class="px-6 py-3 text-left text-gray-500">Date</th>
-                                <th class="px-6 py-3 text-left text-gray-500">Action</th>
-                                <th class="px-6 py-3 text-left text-gray-500">Details</th>
-                                <th class="px-6 py-3 text-left text-gray-500">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y">
-                            <tr>
-                                <td class="px-6 py-4">2024-02-01</td>
-                                <td class="px-6 py-4">Doctor Account Created</td>
-                                <td class="px-6 py-4">Dr. Smith - Cardiology</td>
-                                <td class="px-6 py-4"><span class="text-green-500">Success</span></td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4">2024-02-01</td>
-                                <td class="px-6 py-4">Patient Access Created</td>
-                                <td class="px-6 py-4">John Doe - Room 302</td>
-                                <td class="px-6 py-4"><span class="text-green-500">Success</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+      <!-- Doctor Form -->
+      <form id="doctorForm" action="/register-doctor" method="post" class="form-transition space-y-5 ajax-form">
+        <div>
+          <label for="doctor-name" class="block mb-2">Full Name</label>
+          <input id="doctor-name" type="text" name="name" required
+            class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-red-300"
+            placeholder="Enter doctor's name">
         </div>
+        <div>
+          <label for="doctor-specialization" class="block mb-2">Specialization</label>
+          <select id="doctor-specialization" name="specialization" required
+            class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-red-300">
+            <option value="">Select Specialization</option>
+            <option>Cardiology</option>
+            <option>Neurology</option>
+            <option>Orthopedics</option>
+            <option>Pediatrics</option>
+            <option>Oncology</option>
+          </select>
+        </div>
+        <div>
+          <label for="doctor-id" class="block mb-2">Doctor ID</label>
+          <div class="flex space-x-2">
+            <input id="doctor-id" type="text" name="medical_id" required readonly
+              class="w-full border px-3 py-2 rounded bg-gray-50">
+            <button type="button" onclick="generateAndFill('doctor-id', 'DOC')"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+              Generate
+            </button>
+          </div>
+        </div>
+        <div>
+          <label for="doctor-password" class="block mb-2">Password</label>
+          <div class="flex space-x-2">
+            <!-- Password field now uses type text -->
+            <input id="doctor-password" type="text" name="password" required readonly
+              class="w-full border px-3 py-2 rounded bg-gray-50">
+            <button type="button" onclick="generateAndFill('doctor-password', 'PWD')"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+              Generate
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full py-2 bg-red-600 text-white rounded hover:bg-red-700 transition transform hover:scale-105">
+          Create Doctor Account
+        </button>
+      </form>
+
+      <!-- Staff Form -->
+      <form id="staffForm" action="/register-staff" method="post" class="form-transition space-y-5 hidden ajax-form">
+        <div>
+          <label for="staff-name" class="block mb-2">Full Name</label>
+          <input id="staff-name" type="text" name="name" required
+            class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-red-300"
+            placeholder="Enter staff name">
+        </div>
+        <div>
+          <label for="staff-role" class="block mb-2">Role</label>
+          <select id="staff-role" name="role" required
+            class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-red-300">
+            <option value="">Select Role</option>
+            <option>Nurse</option>
+            <option>Technician</option>
+            <option>Receptionist</option>
+            <option>Administrator</option>
+          </select>
+        </div>
+        <div>
+          <label for="staff-id" class="block mb-2">Staff ID</label>
+          <div class="flex space-x-2">
+            <input id="staff-id" type="text" name="staff_id" required readonly
+              class="w-full border px-3 py-2 rounded bg-gray-50">
+            <button type="button" onclick="generateAndFill('staff-id', 'STF')"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+              Generate
+            </button>
+          </div>
+        </div>
+        <div>
+          <label for="staff-password" class="block mb-2">Password</label>
+          <div class="flex space-x-2">
+            <!-- Password field now uses type text -->
+            <input id="staff-password" type="text" name="password" required readonly
+              class="w-full border px-3 py-2 rounded bg-gray-50">
+            <button type="button" onclick="generateAndFill('staff-password', 'PWD')"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+              Generate
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full py-2 bg-red-600 text-white rounded hover:bg-red-700 transition transform hover:scale-105">
+          Create Staff Account
+        </button>
+      </form>
+
+      <!-- Patient Form -->
+      <form id="patientForm" action="/register-patient" method="post"
+        class="form-transition space-y-5 hidden ajax-form">
+        <div>
+          <label for="patient-name" class="block mb-2">Full Name</label>
+          <input id="patient-name" type="text" name="name" required
+            class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-red-300"
+            placeholder="Enter patient's name">
+        </div>
+        <div>
+          <label for="room-number" class="block mb-2">Room Number</label>
+          <input id="room-number" type="text" name="room_number" required
+            class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-red-300"
+            placeholder="Enter room number">
+        </div>
+        <div>
+          <label for="patient-doctor-id" class="block mb-2">Doctor ID</label>
+          <input id="patient-doctor-id" type="text" name="doctor_id" required
+            class="w-full border px-3 py-2 rounded focus:outline-none focus:ring focus:border-red-300"
+            placeholder="Enter assigned doctor's ID">
+        </div>
+        <div>
+          <label for="patient-id" class="block mb-2">Patient ID</label>
+          <div class="flex space-x-2">
+            <input id="patient-id" type="text" name="patient_id" required readonly
+              class="w-full border px-3 py-2 rounded bg-gray-50">
+            <button type="button" onclick="generateAndFill('patient-id', 'PAT')"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+              Generate
+            </button>
+          </div>
+        </div>
+        <div>
+          <label for="access-code" class="block mb-2">Access Code</label>
+          <div class="flex space-x-2">
+            <input id="access-code" type="text" name="access_code" required readonly
+              class="w-full border px-3 py-2 rounded bg-gray-50">
+            <button type="button" onclick="generateAndFill('access-code', 'ACC')"
+              class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
+              Generate
+            </button>
+          </div>
+        </div>
+        <button type="submit"
+          class="w-full py-2 bg-red-600 text-white rounded hover:bg-red-700 transition transform hover:scale-105">
+          Create Patient Access
+        </button>
+      </form>
     </div>
 
-    <script>
-        function generateDoctorId() {
-            const prefix = 'DOC';
-            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            document.getElementById('doctorId').value = `${prefix}${random}`;
-        }
+    <!-- Recent Activity Section -->
+    <div class="mt-12">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">
+        Recent Activity
+      </h3>
+      <div class="bg-white rounded-xl shadow overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase">
+                Date & Time
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase">
+                Activity Type
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase">
+                Details
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase">
+                Status
+              </th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-800 uppercase">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 text-sm text-gray-800">
+                2024-02-17 14:30
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 bg-red-100 text-red-600 text-xs rounded">Doctor Registration</span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-800">
+                Dr. Sarah Wilson - Cardiology
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">Success</span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-800">
+                <button class="text-red-600 hover:text-red-700 transition">
+                  View Details
+                </button>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-4 text-sm text-gray-800">
+                2024-02-17 13:15
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">Patient Registration</span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-800">
+                John Doe - Room 302
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">Success</span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-800">
+                <button class="text-red-600 hover:text-red-700 transition">
+                  View Details
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-        function generatePatientId() {
-            const prefix = 'PAT';
-            const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            document.getElementById('patientId').value = `${prefix}${random}`;
-        }
+    <!-- Container for partial view (User Management) -->
+    <div id="partial-container" class="max-w-7xl mx-auto mt-12"></div>
+  </main>
 
-        function generatePassword() {
-            const length = 10;
-            const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-            let password = '';
-            for (let i = 0; i < length; i++) {
-                password += charset.charAt(Math.floor(Math.random() * charset.length));
-            }
-            document.getElementById('doctorPassword').value = password;
-        }
+  <script>
+    // Form switching functionality
+    function showForm(formType) {
+      // Hide all forms
+      const forms = ["doctorForm", "staffForm", "patientForm"];
+      forms.forEach((form) => {
+        document.getElementById(form).classList.add("hidden");
+      });
 
-        function generateAccessCode() {
-            const length = 6;
-            const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            let code = '';
-            for (let i = 0; i < length; i++) {
-                code += charset.charAt(Math.floor(Math.random() * charset.length));
-            }
-            document.getElementById('accessCode').value = code;
-        }
+      // Show selected form
+      document.getElementById(formType + "Form").classList.remove("hidden");
 
-        // Form submission handlers
-        document.getElementById('doctorForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Doctor account created successfully!');
+      // Update tab buttons
+      const buttons = document.querySelectorAll(".tab-button");
+      buttons.forEach((button) => {
+        button.classList.remove("active");
+      });
+      event.target.classList.add("active");
+    }
+
+    // ID and password generation
+    function generateAndFill(elementId, type) {
+      const element = document.getElementById(elementId);
+      let result = "";
+      switch (type) {
+        case "DOC":
+        case "STF":
+        case "PAT":
+          // Generate ID format: TYPE + timestamp + random number
+          const timestamp = Date.now().toString().slice(-4);
+          const random = Math.floor(Math.random() * 9000) + 1000;
+          result = `${type}${timestamp}${random}`;
+          break;
+        case "PWD":
+          // Generate password
+          const chars =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+          const length = 12;
+          for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+          }
+          break;
+        case "ACC":
+          // Generate 6-digit access code
+          result = Math.floor(100000 + Math.random() * 900000).toString();
+          break;
+      }
+      element.value = result;
+    }
+    
+    document.querySelectorAll("form.ajax-form").forEach((form) => {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+          // Send data to backend using Fetch API
+          const response = await fetch(form.action, {
+            method: form.method,
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            console.log("Form submitted successfully:", result);
+            alert("Registration successful!");
+            form.reset();
+          } else {
+            console.error("Error from server:", result);
+            alert("Error: " + result.message);
+          }
+        } catch (error) {
+          console.error("Submission error:", error);
+          alert("An error occurred during submission.");
+        }
+      });
+    });
+
+       // AJAX partial load for User Management
+       document.getElementById('userManagementLink').addEventListener('click', function(e) {
+      e.preventDefault();
+      fetch('/admin/user-management')
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to load user data.");
+          return response.text();
+        })
+        .then(html => {
+          // Load the partial view into the container
+          document.getElementById('partial-container').innerHTML = html;
+        })
+        .catch(err => {
+          console.error("Error loading user management:", err);
+          alert("Failed to load user management data.");
         });
+    });
 
-        document.getElementById('patientForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Patient access created successfully!');
-        });
-    </script>
+    // Initialize the page with the doctor form visible
+    document.addEventListener("DOMContentLoaded", () => {
+      showForm("doctor");
+    });
+  </script>
 </body>
+
 </html>

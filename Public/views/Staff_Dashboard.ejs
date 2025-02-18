@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Overview Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-hospital text-blue-600 text-2xl"></i>
+                    <span class="text-xl font-bold">General Hospital Dashboard</span>
+                    <div class="text-sm text-gray-500 hidden md:block">
+                        <span class="mx-2">/</span>
+                        <span>Main Dashboard</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="bg-red-500 text-white px-4 py-2 rounded-lg hidden md:flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Emergency Alert
+                    </button>
+                    <span class="text-gray-600">Last Updated: <span id="lastUpdated">10:45 AM</span></span>
+                    <button onclick="toggleDarkMode()" class="text-gray-600 hover:text-gray-800">
+                        <i id="darkModeIcon" class="fas fa-moon"></i>
+                    </button>
+                    <button class="text-gray-600">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <form action="/logout" method="POST">
+                        <button
+                            type="submit"
+                            class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300">
+                            Sign Out
+                        </button>
+                    </form>         
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-20 px-6 pb-8">
+        <!-- Quick Filters -->
+        <div class="mb-6 flex justify-end space-x-2">
+            <button class="bg-blue-500 text-white px-3 py-1 rounded">24h</button>
+            <button class="bg-white text-gray-600 px-3 py-1 rounded">7d</button>
+            <button class="bg-white text-gray-600 px-3 py-1 rounded">30d</button>
+        </div>
+
+        <!-- Notifications -->
+        <div id="notification" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 hidden">
+            <p class="flex items-center">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                <span id="notificationText"></span>
+                <button onclick="closeNotification()" class="ml-auto">
+                    <i class="fas fa-times"></i>
+                </button>
+            </p>
+        </div>
+
+        <!-- Hospital Stats -->
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition-shadow">
+                <div class="flex justify-between">
+                    <div>
+                        <div class="text-gray-600">Total Patients</div>
+                        <div class="text-2xl font-bold">142</div>
+                    </div>
+                    <div class="text-green-500">
+                        <i class="fas fa-arrow-up"></i>
+                        <span class="text-sm">+5</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition-shadow">
+                <div class="flex justify-between">
+                    <div>
+                        <div class="text-gray-600">Critical Cases</div>
+                        <div class="text-2xl font-bold text-red-500">19</div>
+                    </div>
+                    <div class="text-red-500">
+                        <i class="fas fa-arrow-down"></i>
+                        <span class="text-sm">-2</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition-shadow">
+                <div class="flex justify-between">
+                    <div>
+                        <div class="text-gray-600">Staff on Duty</div>
+                        <div class="text-2xl font-bold">47</div>
+                    </div>
+                    <div class="text-green-500">
+                        <i class="fas fa-arrow-up"></i>
+                        <span class="text-sm">+3</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow hover:shadow-md transition-shadow">
+                <div class="flex justify-between">
+                    <div>
+                        <div class="text-gray-600">Available Beds</div>
+                        <div class="text-2xl font-bold text-green-500">23</div>
+                    </div>
+                    <div class="text-red-500">
+                        <i class="fas fa-arrow-down"></i>
+                        <span class="text-sm">-1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-6 relative">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" id="searchBar" placeholder="Search rooms, departments, or patients..." 
+                   class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+
+        <!-- Department Sections -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- ICU Section -->
+            <div class="bg-white rounded-xl shadow hover:shadow-md transition-shadow p-6">
+                <h2 class="text-xl font-bold mb-4">ICU Department</h2>
+                <button onclick="openModal('ICU')" class="w-full bg-red-50 p-4 rounded-lg hover:bg-red-100 transition-colors">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold">ICU Rooms</div>
+                            <div class="text-sm text-gray-600">4 Rooms (2 Occupied)</div>
+                        </div>
+                        <i class="fas fa-chevron-right text-red-500"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- General Ward Section -->
+            <div class="bg-white rounded-xl shadow hover:shadow-md transition-shadow p-6">
+                <h2 class="text-xl font-bold mb-4">General Ward</h2>
+                <button onclick="openModal('General Ward')" class="w-full bg-blue-50 p-4 rounded-lg hover:bg-blue-100 transition-colors">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold">General Ward</div>
+                            <div class="text-sm text-gray-600">10 Rooms (6 Occupied)</div>
+                        </div>
+                        <i class="fas fa-chevron-right text-blue-500"></i>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Private Rooms Section -->
+            <div class="bg-white rounded-xl shadow hover:shadow-md transition-shadow p-6">
+                <h2 class="text-xl font-bold mb-4">Private Rooms</h2>
+                <button onclick="openModal('Private Rooms')" class="w-full bg-green-50 p-4 rounded-lg hover:bg-green-100 transition-colors">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold">Private Rooms</div>
+                            <div class="text-sm text-gray-600">5 Rooms (3 Occupied)</div>
+                        </div>
+                        <i class="fas fa-chevron-right text-green-500"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Room Selection -->
+    <div id="roomModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-11/12 max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modalTitle" class="text-xl font-bold"></h2>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="roomList" class="space-y-2">
+                <!-- Room options will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to open the modal and populate room options
+        function openModal(department) {
+            const modal = document.getElementById('roomModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const roomList = document.getElementById('roomList');
+
+            modalTitle.textContent = `Select a Room in ${department}`;
+            roomList.innerHTML = '';
+
+            let rooms = [];
+            if (department === 'ICU') {
+                rooms = [
+                    { id: 'ICU-301', status: 'occupied', patient: 'John Doe' },
+                    { id: 'ICU-302', status: 'available' },
+                    { id: 'ICU-303', status: 'occupied', patient: 'Jane Smith' }
+                ];
+            } else if (department === 'General Ward') {
+                rooms = [
+                    { id: 'WARD-401', status: 'occupied', patient: 'Alice Johnson' },
+                    { id: 'WARD-402', status: 'available' },
+                    { id: 'WARD-403', status: 'occupied', patient: 'Bob Wilson' }
+                ];
+            } else if (department === 'Private Rooms') {
+                rooms = [
+                    { id: 'PRIVATE-501', status: 'available' },
+                    { id: 'PRIVATE-502', status: 'occupied', patient: 'Charlie Brown' },
+                    { id: 'PRIVATE-503', status: 'available' }
+                ];
+            }
+
+            rooms.forEach(room => {
+                const roomButton = document.createElement('a');
+                roomButton.href = `/ward`;
+                roomButton.className = `block p-4 rounded-lg mb-2 ${
+                    room.status === 'available' ? 'bg-green-50' : 'bg-gray-50'
+                } hover:bg-opacity-75 transition-colors`;
+
+                const content = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <div class="font-bold">${room.id}</div>
+                            <div class="text-sm ${
+                                room.status === 'available' ? 'text-green-600' : 'text-gray-600'
+                            }">
+                                ${room.status.charAt(0).toUpperCase() + room.status.slice(1)}
+                                ${room.patient ? ` - ${room.patient}` : ''}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                `;
+                roomButton.innerHTML = content;
+                roomList.appendChild(roomButton);
+            });
+
+            modal.classList.remove('hidden');
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('roomModal').classList.add('hidden');
+        }
+
+        // Function to close notification
+        function closeNotification() {
+            document.getElementById('notification').classList.add('hidden');
+        }
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            const icon = document.getElementById('darkModeIcon');
+            if (document.body.classList.contains('dark')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // Simulate a notification
+        setTimeout(() => {
+            document.getElementById('notification').classList.remove('hidden');
+            document.getElementById('notificationText').textContent = 'ICU Room 301 needs immediate attention!';
+        }, 3000);
+
+        // Update time every minute
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = 
+                now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        }
+        setInterval(updateTime, 60000);
+        updateTime();
+    </script>
+</body>
+</html>

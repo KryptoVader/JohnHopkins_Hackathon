@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Hospital Room Monitoring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/staff-dashboard" class="text-blue-600 hover:text-blue-800 mr-2">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <i class="fas fa-hospital text-blue-600 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold">Room 301 Monitoring</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Staff: Dr. Sarah Johnson</span>
+                    <button onclick="showAlertsPanel()"
+                        class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 relative">
+                        <i class="fas fa-bell mr-2"></i>Alerts
+                        <span id="alertCount"
+                            class="absolute -top-2 -right-2 bg-red-700 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </button>
+                    <button onclick="showAddPatientModal()"
+                        class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                        <i class="fas fa-plus mr-2"></i>Add Patient
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Alerts Panel (Sliding from right) -->
+    <div id="alertsPanel"
+        class="fixed right-0 top-0 h-full w-96 bg-white shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-xl font-bold">Recent Alerts</h3>
+            <button onclick="hideAlertsPanel()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="alertsList" class="p-4 space-y-4 overflow-y-auto" style="height: calc(100vh - 64px);">
+            <!-- Alerts will be added here dynamically -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="pt-20 px-6 pb-8">
+        <!-- Room Overview -->
+        <div class="mb-6 grid grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="text-gray-600">Total Patients</div>
+                <div class="text-2xl font-bold"><span id="currentPatients">6</span>/6</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="text-gray-600">Critical Cases</div>
+                <div class="text-2xl font-bold text-red-500" id="criticalCount">2</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="text-gray-600">Staff on Duty</div>
+                <div class="text-2xl font-bold">3</div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="text-gray-600">Room Status</div>
+                <div class="text-2xl font-bold text-green-500">Normal</div>
+            </div>
+        </div>
+
+        <!-- Patients Grid -->
+        <div id="patientsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Patient cards will be generated here -->
+        </div>
+    </div>
+
+    <!-- Add Patient Modal -->
+    <div id="addPatientModal"
+        class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Add New Patient</h3>
+                <button onclick="hideAddPatientModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addPatientForm" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-2">Patient Name</label>
+                    <input type="text" id="patientName" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Age</label>
+                    <input type="number" id="patientAge" class="w-full p-2 border rounded-lg" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Bed Number</label>
+                    <select id="bedNumber" class="w-full p-2 border rounded-lg" required>
+                        <option value="">Select Bed</option>
+                        <option value="301-A">301-A</option>
+                        <option value="301-B">301-B</option>
+                        <option value="301-C">301-C</option>
+                        <option value="301-D">301-D</option>
+                        <option value="301-E">301-E</option>
+                        <option value="301-F">301-F</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-2">Initial Status</label>
+                    <select id="patientStatus" class="w-full p-2 border rounded-lg" required>
+                        <option value="stable">Stable</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="hideAddPatientModal()"
+                        class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Add
+                        Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Patient data structure with realistic initial values
+        const patients = [
+            {
+                id: 1,
+                name: "John Doe",
+                age: 65,
+                bed: "301-A",
+                status: "critical",
+                vitals: {
+                    heartRate: 112,
+                    spo2: 89,
+                    bp: { systolic: 148, diastolic: 92 },
+                    temp: 38.7
+                }
+            },
+            {
+                id: 2,
+                name: "Jane Smith",
+                age: 45,
+                bed: "301-B",
+                status: "stable",
+                vitals: {
+                    heartRate: 75,
+                    spo2: 98,
+                    bp: { systolic: 120, diastolic: 80 },
+                    temp: 36.8
+                }
+            },
+            {
+                id: 3,
+                name: "Robert Johnson",
+                age: 72,
+                bed: "301-C",
+                status: "critical",
+                vitals: {
+                    heartRate: 115,
+                    spo2: 91,
+                    bp: { systolic: 150, diastolic: 95 },
+                    temp: 38.2
+                }
+            },
+            {
+                id: 4,
+                name: "Mary Williams",
+                age: 58,
+                bed: "301-D",
+                status: "stable",
+                vitals: {
+                    heartRate: 82,
+                    spo2: 97,
+                    bp: { systolic: 125, diastolic: 85 },
+                    temp: 37.1
+                }
+            },
+            {
+                id: 5,
+                name: "James Brown",
+                age: 67,
+                bed: "301-E",
+                status: "stable",
+                vitals: {
+                    heartRate: 78,
+                    spo2: 96,
+                    bp: { systolic: 130, diastolic: 85 },
+                    temp: 37.0
+                }
+            },
+            {
+                id: 6,
+                name: "Patricia Davis",
+                age: 51,
+                bed: "301-F",
+                status: "stable",
+                vitals: {
+                    heartRate: 80,
+                    spo2: 97,
+                    bp: { systolic: 122, diastolic: 82 },
+                    temp: 36.9
+                }
+            }
+        ];
+
+        // Realistic vital sign ranges
+        const vitalRanges = {
+            stable: {
+                heartRate: { min: 60, max: 100 },
+                spo2: { min: 95, max: 100 },
+                bp: { systolic: { min: 90, max: 140 }, diastolic: { min: 60, max: 90 } },
+                temp: { min: 36.0, max: 37.5 }
+            },
+            critical: {
+                heartRate: { min: 40, max: 140 },
+                spo2: { min: 85, max: 94 },
+                bp: { systolic: { min: 70, max: 180 }, diastolic: { min: 40, max: 110 } },
+                temp: { min: 35.0, max: 40.0 }
+            }
+        };
+
+        // Charts storage
+        const charts = {};
+
+        // Initialize the dashboard
+        function initializeDashboard() {
+            updatePatientsGrid();
+            updateStats();
+
+            // Fetch data immediately and then every 2 seconds
+            fetchVitalsData();
+            setInterval(fetchVitalsData, 2000);
+        }
+
+        // Create patient card
+        function createPatientCard(patient) {
+            return `
+                <a href="/patient-details?patientId=${patient.id}" class="block">
+                <div id="patient-${patient.id}" class="bg-white rounded-lg shadow-lg border-l-4 ${patient.status === 'critical' ? 'border-red-500' : 'border-green-500'
+                            } hover:bg-gray-50 transition-colors">
+                    <div class="p-4">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                        <div class="text-lg font-bold">Bed ${patient.bed}</div>
+                        <div class="text-gray-600">${patient.name}, ${patient.age}</div>
+                        </div>
+                        <div class="flex space-x-2">
+                        <span class="px-2 py-1 ${patient.status === 'critical'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-green-100 text-green-800'
+                            } rounded-full text-sm">
+                            ${patient.status.charAt(0).toUpperCase() + patient.status.slice(1)}
+                        </span>
+                        <button onclick="removePatient(${patient.id}); event.stopPropagation();" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-gray-50 p-3 rounded-lg" data-vital="heartRate">
+                        <div class="text-sm text-gray-600">Heart Rate</div>
+                        <div class="value text-xl font-bold">${patient.vitals.heartRate}</div>
+                        <span class="unit">BPM</span>
+                        <canvas id="heartRate-${patient.id}" height="50"></canvas>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg" data-vital="spo2">
+                        <div class="text-sm text-gray-600">SpO2</div>
+                        <div class="value text-xl font-bold">${patient.vitals.spo2}</div>
+                        <span class="unit">%</span>
+                        <canvas id="spo2-${patient.id}" height="50"></canvas>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg" data-vital="bp">
+                        <div class="text-sm text-gray-600">BP</div>
+                        <div class="value text-xl font-bold">${patient.vitals.bp.systolic}/${patient.vitals.bp.diastolic}</div>
+                        <span class="unit">mmHg</span>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg" data-vital="temp">
+                        <div class="text-sm text-gray-600">Temp</div>
+                        <div class="value text-xl font-bold">${patient.vitals.temp.toFixed(1)}</div>
+                        <span class="unit">°C</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Last Updated: Just now</span>
+                        <button class="text-blue-500 hover:text-blue-700">
+                        <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                </a>
+            `;
+        }
+
+
+        // Update patients grid
+        function updatePatientsGrid() {
+            const grid = document.getElementById('patientsGrid');
+            grid.innerHTML = '';
+            patients.forEach(patient => {
+                grid.innerHTML += createPatientCard(patient);
+            });
+            // Initialize charts after cards are created
+            patients.forEach(patient => {
+                initializeCharts(patient.id);
+            });
+        }
+
+        // Initialize charts for a patient
+        function initializeCharts(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            const heartRateData = Array(15).fill(patient.vitals.heartRate);
+            const spo2Data = Array(15).fill(patient.vitals.spo2);
+
+            charts[`heartRate-${patientId}`] = createChart(`heartRate-${patientId}`, heartRateData,
+                patient.status === 'critical' ? 'rgb(239, 68, 68)' : 'rgb(34, 197, 94)');
+            charts[`spo2-${patientId}`] = createChart(`spo2-${patientId}`, spo2Data,
+                patient.status === 'critical' ? 'rgb(239, 68, 68)' : 'rgb(34, 197, 94)');
+        }
+
+        // Create chart
+        function createChart(canvasId, data, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array(data.length).fill(''),
+                    datasets: [{
+                        data: data,
+                        borderColor: color,
+                        borderWidth: 1.5,
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    },
+                    elements: {
+                        point: { radius: 0 }
+                    }
+                }
+            });
+        }
+
+        // Realistic vital signs simulation using microcontroller data
+        async function fetchVitalsData() {
+            try {
+                const response = await fetch('http://192.168.8.176/prototype');
+                const espData = await response.json();
+
+                espData.forEach(espPatient => {
+                    const patient = patients.find(p => p.id === espPatient.id);
+                    if (patient) {
+                        // Update vitals from ESP32 data
+                        patient.vitals.heartRate = espPatient.heartRate;
+                        patient.vitals.spo2 = espPatient.spo2;
+                        patient.vitals.temp = espPatient.temp;
+
+                        // Parse blood pressure
+                        const [systolic, diastolic] = espPatient.bp.split('/').map(Number);
+                        patient.vitals.bp.systolic = systolic;
+                        patient.vitals.bp.diastolic = diastolic;
+
+                        // Update charts and UI
+                        updateCharts(patient);
+                        updatePatientVitals(patient);
+                        checkVitalSigns(patient);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching vitals data:', error);
+            }
+        }
+
+        // Update charts for a patient
+        function updateCharts(patient) {
+            const updateChartData = (chart, newValue) => {
+                if (chart.data.datasets[0].data.length >= 15) {
+                    chart.data.datasets[0].data.shift();
+                }
+                chart.data.datasets[0].data.push(newValue);
+                chart.update();
+            };
+
+            if (charts[`heartRate-${patient.id}`]) {
+                updateChartData(charts[`heartRate-${patient.id}`], patient.vitals.heartRate);
+            }
+            if (charts[`spo2-${patient.id}`]) {
+                updateChartData(charts[`spo2-${patient.id}`], patient.vitals.spo2);
+            }
+        }
+
+        // Check vital signs and create alerts for anomalies
+        function checkVitalSigns(patient) {
+            if (patient.vitals.heartRate > 100 || patient.vitals.heartRate < 60) {
+                createAlert(patient, 'Heart Rate', patient.vitals.heartRate + ' BPM');
+            }
+            if (patient.vitals.spo2 < 95) {
+                createAlert(patient, 'SpO2', patient.vitals.spo2 + '%');
+            }
+            // New logic for blood pressure anomaly (systolic above 120)
+            if (patient.vitals.bp.systolic > 120) {
+                createAlert(patient, 'Blood Pressure', patient.vitals.bp.systolic + '/' + patient.vitals.bp.diastolic + ' mmHg');
+            }
+        }
+
+        // Update patient vitals display with anomaly highlighting
+        function updatePatientVitals(patient) {
+            const card = document.getElementById(`patient-${patient.id}`);
+            if (card) {
+                const vitalElements = card.querySelectorAll('[data-vital]');
+                vitalElements.forEach(element => {
+                    const vitalType = element.dataset.vital;
+                    const valueElement = element.querySelector('.value');
+                    switch (vitalType) {
+                        case 'heartRate':
+                            valueElement.textContent = patient.vitals.heartRate;
+                            valueElement.className = `value text-xl font-bold ${patient.vitals.heartRate > 100 || patient.vitals.heartRate < 60 ? 'text-red-500' : 'text-green-500'}`;
+                            break;
+                        case 'spo2':
+                            valueElement.textContent = patient.vitals.spo2;
+                            valueElement.className = `value text-xl font-bold ${patient.vitals.spo2 < 95 ? 'text-red-500' : 'text-green-500'}`;
+                            break;
+                        case 'bp':
+                            valueElement.textContent = `${patient.vitals.bp.systolic}/${patient.vitals.bp.diastolic}`;
+                            // If systolic BP is above 120, set text to red; otherwise, green.
+                            valueElement.className = `value text-xl font-bold ${patient.vitals.bp.systolic > 120 ? 'text-red-500' : 'text-green-500'}`;
+                            break;
+                        case 'temp':
+                            valueElement.textContent = patient.vitals.temp.toFixed(1);
+                            break;
+                    }
+                });
+            }
+        }
+
+        // Alert management
+        let alertCount = 0;
+        const alerts = [];
+
+        function createAlert(patient, vitalSign, value) {
+            const alert = {
+                id: Date.now(),
+                patient: patient.name,
+                bed: patient.bed,
+                vitalSign,
+                value,
+                timestamp: new Date().toLocaleTimeString()
+            };
+
+            alerts.unshift(alert);
+            if (alerts.length > 50) alerts.pop(); // Keep last 50 alerts
+
+            updateAlertsList();
+            updateAlertCount();
+        }
+
+        function updateAlertsList() {
+            const alertsList = document.getElementById('alertsList');
+            alertsList.innerHTML = alerts.map(alert => `
+                <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-bold text-red-600">${alert.patient}</span>
+                            <span class="text-gray-600"> (Bed ${alert.bed})</span>
+                        </div>
+                        <span class="text-sm text-gray-500">${alert.timestamp}</span>
+                    </div>
+                    <div class="mt-1 text-gray-700">
+                        ${alert.vitalSign}: ${alert.value}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateAlertCount() {
+            const countElement = document.getElementById('alertCount');
+            countElement.textContent = alerts.length;
+        }
+
+        // Patient management functions
+        function addPatient(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('patientName').value;
+            const age = document.getElementById('patientAge').value;
+            const bed = document.getElementById('bedNumber').value;
+            const status = document.getElementById('patientStatus').value;
+
+            const newPatient = {
+                id: patients.length + 1,
+                name,
+                age,
+                bed,
+                status,
+                vitals: {
+                    heartRate: status === 'critical' ? 110 : 75,
+                    spo2: status === 'critical' ? 92 : 98,
+                    bp: { systolic: status === 'critical' ? 140 : 120, diastolic: status === 'critical' ? 90 : 80 },
+                    temp: status === 'critical' ? 38.5 : 36.8
+                }
+            };
+
+            patients.push(newPatient);
+            updatePatientsGrid();
+            updateStats();
+            hideAddPatientModal();
+        }
+
+        function removePatient(patientId) {
+            const index = patients.findIndex(p => p.id === patientId);
+            if (index !== -1) {
+                patients.splice(index, 1);
+                updatePatientsGrid();
+                updateStats();
+            }
+        }
+
+        // Stats updates
+        function updateStats() {
+            document.getElementById('currentPatients').textContent = patients.length;
+            document.getElementById('criticalCount').textContent =
+                patients.filter(p => p.status === 'critical').length;
+        }
+
+        // Modal controls
+        function showAddPatientModal() {
+            document.getElementById('addPatientModal').classList.remove('hidden');
+        }
+
+        function hideAddPatientModal() {
+            document.getElementById('addPatientModal').classList.add('hidden');
+        }
+
+        function showAlertsPanel() {
+            document.getElementById('alertsPanel').classList.remove('translate-x-full');
+        }
+
+        function hideAlertsPanel() {
+            document.getElementById('alertsPanel').classList.add('translate-x-full');
+        }
+
+        // Event listeners
+        document.getElementById('addPatientForm').addEventListener('submit', addPatient);
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initializeDashboard);
+    </script>
+</body>
+
+</html>

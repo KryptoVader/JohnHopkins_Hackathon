@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Details - MediCare ICU</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between h-20">
+        <div class="flex items-center">
+          <a href="/doctor-dashboard" class="flex items-center space-x-2 text-blue-600 hover:text-blue-800 mr-4">
+            <i class="fas fa-arrow-left"></i>
+            <span class="text-sm">Back to Dashboard</span>
+          </a>
+          <i class="fas fa-heartbeat text-red-500 text-3xl mr-2"></i>
+          <span class="text-gray-800 text-2xl font-bold">
+            Medi<span class="text-red-500">Care</span> ICU
+          </span>
+        </div>
+        <!-- Save Changes now submits the patient form -->
+        <form id="patientForm" class="flex items-center space-x-6">
+          <div class="flex items-center space-x-2">
+            <span class="text-gray-600">Last updated:</span>
+            <span class="text-sm text-gray-500">
+              <%= patient.last_updated || "Just now" %>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Patient Info Header with Editable Fields -->
+  <div class="pt-28 pb-10 bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4">
+      <!-- Begin Patient Details Form -->
+      <form id="patientForm" action="/update-patient-details" method="POST">
+        <input type="hidden" name="patient_id" value="<%= patient.patient_id %>">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-6">
+            <div class="relative group">
+              <div
+                class="w-24 h-24 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center border-2 border-blue-200 hover:border-blue-300 transition duration-300">
+                <i class="fas fa-user text-4xl text-blue-400"></i>
+              </div>
+              <input type="file" class="absolute inset-0 opacity-0 cursor-pointer">
+              <div
+                class="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center cursor-pointer">
+                <i class="fas fa-camera"></i>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-4">
+                <!-- Editable Patient Name -->
+                <input type="text" name="name" value="<%= patient.name %>"
+                  class="text-3xl font-bold bg-transparent border-b-2 border-transparent focus:border-blue-500 outline-none">
+                <!-- Editable Gender as Select -->
+                <select name="gender" class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                  <option value="Male" <%=patient.gender==='Male' ? 'selected' : '' %>>Male</option>
+                  <option value="Female" <%=patient.gender==='Female' ? 'selected' : '' %>>Female</option>
+                  <option value="Other" <%=patient.gender==='Other' ? 'selected' : '' %>>Other</option>
+                </select>
+                <!-- Editable Age -->
+                <input type="number" name="age" value="<%= patient.age %>"
+                  class="text-gray-500 w-16 border-b-2 border-transparent focus:border-blue-500 outline-none" min="0"
+                  max="110"> Years Old
+              </div>
+              <div class="flex space-x-6 text-sm">
+                <div class="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                  <i class="fas fa-fingerprint text-gray-500"></i>
+                  <input type="text" value="<%= patient.patient_id %>" class="bg-transparent focus:outline-none w-24"
+                    readonly>
+                </div>
+                <div class="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-lg">
+                  <i class="fas fa-bed text-gray-500"></i>
+                  <input type="text" name="room_number" value="<%= patient.room_number %>"
+                    class="bg-transparent focus:outline-none w-20">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <!-- Editable Patient Status -->
+            <select name="status"
+              class="px-6 py-3 rounded-lg bg-green-100 text-green-800 border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+              <option <%=patient.status==='Stable' ? 'selected' : '' %>>Stable</option>
+              <option <%=patient.status==='Critical' ? 'selected' : '' %>>Critical</option>
+              <option <%=patient.status==='Recovering' ? 'selected' : '' %>>Recovering</option>
+            </select>
+            <button class="p-2 text-gray-500 hover:text-gray-700">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <button type="submit" id="saveChangesBtn"
+            class="bg-blue-500 text-white px-2 py-1 text-xs rounded hover:bg-blue-600 transition duration-300 flex items-center space-x-1">
+            <i class="fas fa-save text-xs"></i>
+            <span>Save</span>
+          </button>
+        </div>
+      </form>
+      <!-- End Patient Details Form -->
+    </div>
+  </div>
+
+  <!-- Quick Stats Bar -->
+  <div class="bg-white border-t border-b">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="grid grid-cols-4 gap-8">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+            <i class="fas fa-heartbeat text-red-500"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Heart Rate</div>
+            <div class="text-2xl font-bold text-red-500" id="heartRateValue">-- bpm</div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <i class="fas fa-lungs text-blue-500"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Blood Oxygen</div>
+            <div class="text-2xl font-bold text-green-500" id="spo2Value">--%</div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+            <i class="fas fa-thermometer-half text-purple-500"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Temperature</div>
+            <div class="text-2xl font-bold text-yellow-500" id="tempValue">--°C</div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <i class="fas fa-tachometer-alt text-yellow-500"></i>
+          </div>
+          <div>
+            <div class="text-sm text-gray-500">Blood Pressure</div>
+            <div class="text-2xl font-bold text-blue-500" id="bpValue">--/-- mmHg</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="py-8">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Medical Controls Section -->
+        <div class="space-y-8">
+          <!-- Medication Orders -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-xl font-semibold mb-6 flex justify-between items-center">
+              <span class="flex items-center space-x-2">
+                <i class="fas fa-pills text-blue-500"></i>
+                <span>Medication Orders</span>
+              </span>
+              <button onclick="openMedicationModal()"
+                class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition duration-300 flex items-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>Add Medication</span>
+              </button>
+            </h2>
+            <div class="space-y-4" id="medicationList">
+              <% if(patient.medicationOrders && patient.medicationOrders.length> 0) { %>
+                <% patient.medicationOrders.forEach(function(med){ %>
+                  <div
+                    class="p-4 bg-gray-50 rounded-lg border border-gray-100 hover:border-blue-200 transition duration-300">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h3 class="font-semibold text-gray-800">
+                          <%= med.name %>
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                          <%= med.dosage %> | <%= med.frequency %>
+                        </p>
+                      </div>
+                      <div class="flex space-x-2">
+                        <button class="text-gray-400 hover:text-blue-500">
+                          <i class="fas fa-pen"></i>
+                        </button>
+                        <button class="text-gray-400 hover:text-red-500">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="mt-3 flex items-center space-x-4 text-sm text-gray-500">
+                      <span class="flex items-center space-x-1">
+                        <i class="fas fa-clock"></i>
+                        <span>Started: <%= med.started_at || "N/A" %></span>
+                      </span>
+                      <span class="flex items-center space-x-1">
+                        <i class="fas fa-calendar"></i>
+                        <span>Duration: <%= med.duration || "N/A" %></span>
+                      </span>
+                    </div>
+                  </div>
+                  <% }); %>
+                    <% } else { %>
+                      <p class="text-gray-500 text-sm">No medication orders available.</p>
+                      <% } %>
+            </div>
+          </div>
+          <!-- Treatment Plan Section -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-xl font-semibold mb-6 flex justify-between items-center">
+              <span class="flex items-center space-x-2">
+                <i class="fas fa-clipboard-list text-green-500"></i>
+                <span>Treatment Plan</span>
+              </span>
+              <button onclick="openTreatmentPlanModal()"
+                class="px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition duration-300 flex items-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>Edit Plan</span>
+              </button>
+            </h2>
+            <div class="space-y-4">
+              <p class="text-gray-600 text-sm">
+                <%= patient.treatment_plan || "No treatment plan provided." %>
+              </p>
+              <div class="flex justify-between items-center text-sm text-gray-500">
+                <span>Last updated: <%= patient.treatment_plan_last_updated || "N/A" %></span>
+                <button class="text-green-500 hover:text-green-600">
+                  <i class="fas fa-history mr-1"></i>
+                  View History
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clinical Monitoring Section -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold flex items-center space-x-2">
+              <i class="fas fa-chart-line text-purple-500"></i>
+              <span>Clinical Monitoring</span>
+            </h2>
+            <div class="flex space-x-2">
+              <button class="px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition duration-300">
+                <i class="fas fa-chart-bar mr-1"></i>
+                Trends
+              </button>
+              <button class="px-4 py-2 bg-gray-100 rounded-lg text-sm hover:bg-gray-200 transition duration-300">
+                <i class="fas fa-history mr-1"></i>
+                History
+              </button>
+            </div>
+          </div>
+          <div class="space-y-6">
+            <!-- Heart Rate Chart -->
+            <div class="bg-gradient-to-br from-red-50 to-white p-4 rounded-xl border border-red-100">
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h3 class="font-semibold text-gray-800">Heart Rate</h3>
+                  <p class="text-sm text-gray-500">Last 24 hours</p>
+                </div>
+              </div>
+              <canvas id="heartRateChart" style="height:300px; max-width:600px;"></canvas>
+            </div>
+            <!-- Blood Pressure Chart -->
+            <div class="bg-gradient-to-br from-blue-50 to-white p-4 rounded-xl border border-blue-100">
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h3 class="font-semibold text-gray-800">Blood Pressure</h3>
+                  <p class="text-sm text-gray-500">Last 24 hours</p>
+                </div>
+              </div>
+              <canvas id="bpChart" style="height:300px; max-width:600px;"></canvas>
+            </div>
+            <!-- SpO₂ Chart -->
+            <div class="bg-gradient-to-br from-green-50 to-white p-4 rounded-xl border border-green-100">
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h3 class="font-semibold text-gray-800">SpO₂</h3>
+                  <p class="text-sm text-gray-500">Last 24 hours</p>
+                </div>
+              </div>
+              <canvas id="spo2Chart" style="height:300px; max-width:600px;"></canvas>
+            </div>
+            <!-- Temperature Chart -->
+            <div class="bg-gradient-to-br from-yellow-50 to-white p-4 rounded-xl border border-yellow-100">
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h3 class="font-semibold text-gray-800">Temperature</h3>
+                  <p class="text-sm text-gray-500">Last 24 hours</p>
+                </div>
+              </div>
+              <canvas id="tempChart" style="height:300px; max-width:600px;"></canvas>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Clinical Notes & Orders -->
+        <div class="space-y-8">
+          <!-- Progress Notes Section -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-xl font-semibold mb-6 flex justify-between items-center">
+              <span class="flex items-center space-x-2">
+                <i class="fas fa-notes-medical text-yellow-500"></i>
+                <span>Progress Notes</span>
+              </span>
+              <button onclick="openProgressNotesModal()"
+                class="px-4 py-2 bg-yellow-50 text-yellow-600 rounded-lg hover:bg-yellow-100 transition duration-300 flex items-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>Add Note</span>
+              </button>
+            </h2>
+            <div class="space-y-4">
+              <% if(patient.progressNotes && patient.progressNotes.length> 0) { %>
+                <% patient.progressNotes.forEach(function(note) { %>
+                  <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <div class="flex justify-between items-start">
+                      <div class="flex items-start space-x-3">
+                        <div>
+                          <h3 class="font-semibold text-gray-800">Dr. <%= note.doctor_name %>
+                          </h3>
+                          <p class="text-sm text-gray-500">
+                            <%= note.created_at || "Some time ago" %>
+                          </p>
+                        </div>
+                      </div>
+                      <button class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-ellipsis-v"></i>
+                      </button>
+                    </div>
+                    <p class="mt-3 text-gray-600">
+                      <%= note.note %>
+                    </p>
+                  </div>
+                  <% }); %>
+                    <% } else { %>
+                      <p class="text-gray-500 text-sm">No progress notes available.</p>
+                      <% } %>
+            </div>
+          </div>
+          <!-- Lab Orders Section -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+            <h2 class="text-xl font-semibold mb-6 flex justify-between items-center">
+              <span class="flex items-center space-x-2">
+                <i class="fas fa-flask text-purple-500"></i>
+                <span>Lab Orders</span>
+              </span>
+              <button onclick="openLabOrdersModal()"
+                class="px-4 py-2 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition duration-300 flex items-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>New Order</span>
+              </button>
+            </h2>
+            <div class="space-y-4">
+              <% if(patient.labOrders && patient.labOrders.length> 0) { %>
+                <% patient.labOrders.forEach(function(order) { %>
+                  <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h3 class="font-semibold text-gray-800">
+                          <%= order.test_name %>
+                        </h3>
+                        <p class="text-sm text-gray-500">Ordered: <%= order.ordered_at %>
+                        </p>
+                      </div>
+                      <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+                        <%= order.status || 'Pending' %>
+                      </span>
+                    </div>
+                  </div>
+                  <% }); %>
+                    <% } else { %>
+                      <p class="text-gray-500 text-sm">No lab orders available.</p>
+                      <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Medication Modal -->
+  <div id="medicationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-semibold mb-6">Add New Medication</h3>
+        <form class="space-y-4" action="/add-medication" method="post">
+          <input type="hidden" name="patient_id" value="<%= patient.patient_id %>">
+          <input type="hidden" name="doctor_id" value="<%= patient.doctor_id %>">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Medication Name</label>
+            <input type="text" name="medication_name" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Dosage</label>
+              <input type="text" name="dosage" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+              <select name="frequency"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option>Once daily</option>
+                <option>Twice daily</option>
+                <option>Three times daily</option>
+                <option>Four times daily</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+            <input type="text" name="duration"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div class="flex justify-end space-x-3 mt-6">
+            <button type="button" onclick="closeMedicationModal()"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+            <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Add
+              Medication</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Treatment Plan Modal -->
+  <div id="treatmentPlanModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-semibold mb-6">Edit Treatment Plan</h3>
+        <form class="space-y-4" action="/update-treatment-plan" method="POST">
+          <input type="hidden" name="patient_id" value="<%= patient.patient_id %>">
+          <input type="hidden" name="doctor_id" value="<%= patient.doctor_id %>">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Plan Details</label>
+            <textarea name="treatment_plan" required
+              class="w-full h-40 p-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
+              placeholder="Enter treatment plan details..."><%= patient.treatment_plan || "" %></textarea>
+          </div>
+          <div class="flex justify-end space-x-3 mt-6">
+            <button type="button" onclick="closeTreatmentPlanModal()"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+            <button type="submit" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Save
+              Plan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Notes Modal -->
+  <div id="progressNotesModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-semibold mb-6">Add Progress Note</h3>
+        <form class="space-y-4" action="/add-progress-note" method="POST">
+          <input type="hidden" name="patient_id" value="<%= patient.patient_id %>">
+          <input type="hidden" name="doctor_id" value="<%= patient.doctor_id %>">
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Note</label>
+            <textarea name="note" required
+              class="w-full h-32 p-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"
+              placeholder="Enter progress note..."></textarea>
+          </div>
+          <div class="flex justify-end space-x-3 mt-6">
+            <button type="button" onclick="closeProgressNotesModal()"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+            <button type="submit" class="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600">Add
+              Note</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lab Orders Modal -->
+  <div id="labOrdersModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50">
+    <div class="flex items-center justify-center min-h-screen px-4">
+      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+        <h3 class="text-xl font-semibold mb-6">New Lab Order</h3>
+        <form class="space-y-4" action="/add-lab-order" method="POST">
+          <input type="hidden" name="patient_id" value="<%= patient.patient_id %>">
+          <input type="hidden" name="doctor_id" value="<%= patient.doctor_id %>">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Test Name</label>
+            <input type="text" name="test_name" required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              placeholder="Enter test name">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+              <select name="status"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                <option>Routine</option>
+                <option>Urgent</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Collection Time</label>
+              <input type="datetime-local"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+          </div>
+          <div class="flex justify-end space-x-3 mt-6">
+            <button type="button" onclick="closeLabOrdersModal()"
+              class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+            <button type="submit" class="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600">New
+              Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    class PatientMonitor {
+      constructor(updateInterval = 2000, dataPoints = 10) {
+        this.updateInterval = updateInterval;
+        this.dataPoints = dataPoints;
+        this.charts = {};
+        this.mainCharts = {};
+      }
+
+      // Fetch real-time patient data from ESP32
+      async fetchPatientData() {
+        try {
+          const response = await fetch("http://192.168.8.176/patient");
+          const data = await response.json();
+          console.log("Received Data:", data);
+          return data;
+        } catch (error) {
+          console.error("Error fetching patient data:", error);
+          return null;
+        }
+      }
+
+      // Initialize main charts (Heart Rate, BP, SpO₂, Temperature)
+      initializeMainCharts() {
+        console.log("Initializing Main Charts...");
+        this.mainCharts.heartRate = this.createChart('heartRateChart', 'Heart Rate', '#EF4444', 50, 150);
+        this.mainCharts.bp = this.createChart('bpChart', 'Blood Pressure', '#3B82F6', 50, 180, true);
+        this.mainCharts.spo2 = this.createChart('spo2Chart', 'SpO₂', '#10B981', 85, 100);
+        this.mainCharts.temp = this.createChart('tempChart', 'Temperature', '#F59E0B', 35, 40);
+        console.log("Main Charts Initialized!");
+      }
+
+      // Create a Chart.js instance
+      createChart(canvasId, label, borderColor, min, max, isBP = false) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+
+        return new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: [],
+            datasets: isBP
+              ? [
+                { label: 'Systolic', data: [], borderColor: borderColor, borderWidth: 2, fill: false },
+                { label: 'Diastolic', data: [], borderColor: '#60A5FA', borderWidth: 2, fill: false }
+              ]
+              : [
+                { label, data: [], borderColor, borderWidth: 2, fill: true, backgroundColor: this.getGradient(ctx, borderColor) }
+              ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            animation: { duration: 500 },
+            plugins: {
+              legend: { display: true, position: 'top' },
+              tooltip: { enabled: true, backgroundColor: 'rgba(0,0,0,0.7)', titleColor: '#fff' }
+            },
+            scales: {
+              x: {
+                ticks: { color: '#6B7280' },
+                grid: { display: false }
+              },
+              y: {
+                min, max,
+                ticks: { color: '#6B7280', stepSize: (max - min) / 5 },
+                grid: { color: 'rgba(200, 200, 200, 0.3)', borderDash: [5, 5] }
+              }
+            }
+          }
+        });
+      }
+
+      getGradient(ctx, color) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, color + '66');  // Lighter at top
+        gradient.addColorStop(1, color + '00');  // Transparent at bottom
+        return gradient;
+      }
+
+      // Function to generate gradient background for a smooth UI effect
+      getGradient(ctx, color) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, color + '66');  // Lighter at top
+        gradient.addColorStop(1, color + '00');  // Transparent at bottom
+        return gradient;
+      }
+
+      // Update charts with new data
+      updateChartsWithData(data) {
+        if (!data) return;
+
+        const timeNow = new Date().toLocaleTimeString();
+
+        this.updateChart('heartRate', data.heartRate, document.getElementById('heartRateValue'), 0, timeNow);
+        this.updateChart('spo2', data.spo2, document.getElementById('spo2Value'), 0, timeNow);
+        this.updateChart('temp', data.temp, document.getElementById('tempValue'), 1, timeNow);
+
+        if (document.getElementById('bpValue')) {
+          document.getElementById('bpValue').textContent = data.bp;
+        }
+
+        const [systolic, diastolic] = data.bp.split('/').map(Number);
+        this.updateChart('bp', systolic, document.getElementById('bpSystolicValue'), 0, timeNow, diastolic);
+      }
+
+      // Update a specific chart
+      updateChart(chartKey, newValue, displayElement, decimals, label, diastolic = null) {
+        const chart = this.mainCharts[chartKey];
+        if (chart) {
+          if (chart.data.labels.length >= this.dataPoints) {
+            chart.data.labels.shift();
+            chart.data.datasets[0].data.shift();
+            if (diastolic !== null) chart.data.datasets[1].data.shift();
+          }
+          chart.data.labels.push(label);
+          chart.data.datasets[0].data.push(newValue);
+          if (diastolic !== null) chart.data.datasets[1].data.push(diastolic);
+          if (displayElement) {
+            displayElement.textContent = parseFloat(newValue).toFixed(decimals);
+          }
+          chart.update();
+        }
+      }
+
+      // Start monitoring
+      start() {
+        this.initializeMainCharts();
+        const updateFunction = async () => {
+          const data = await this.fetchPatientData();
+          if (data) {
+            this.updateChartsWithData(data);
+            this.updateTextualValues(data);
+          }
+        };
+        updateFunction();
+        setInterval(updateFunction, this.updateInterval);
+      }
+
+      // Update numeric values shown beside charts
+      updateTextualValues(data) {
+        if (document.getElementById("heartRateValue")) {
+          document.getElementById("heartRateValue").textContent = `${data.heartRate} bpm`;
+        }
+        if (document.getElementById("spo2Value")) {
+          document.getElementById("spo2Value").textContent = `${data.spo2}%`;
+        }
+        if (document.getElementById("tempValue")) {
+          document.getElementById("tempValue").textContent = `${data.temp}°C`;
+        }
+        if (document.getElementById("bpValue")) {
+          document.getElementById("bpValue").textContent = data.bp;
+        }
+      }
+    }
+
+    // Start monitoring when page loads
+    // Modal Functions for Medication, Treatment Plan, Progress Notes, Lab Orders
+    function openMedicationModal() { document.getElementById('medicationModal').classList.remove('hidden'); }
+    function closeMedicationModal() { document.getElementById('medicationModal').classList.add('hidden'); }
+    function openTreatmentPlanModal() { document.getElementById('treatmentPlanModal').classList.remove('hidden'); }
+    function closeTreatmentPlanModal() { document.getElementById('treatmentPlanModal').classList.add('hidden'); }
+    function openProgressNotesModal() { document.getElementById('progressNotesModal').classList.remove('hidden'); }
+    function closeProgressNotesModal() { document.getElementById('progressNotesModal').classList.add('hidden'); }
+    function openLabOrdersModal() { document.getElementById('labOrdersModal').classList.remove('hidden'); }
+    function closeLabOrdersModal() { document.getElementById('labOrdersModal').classList.add('hidden'); }
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("Initializing Patient Monitor...");
+      const monitor = new PatientMonitor();
+      monitor.start();
+    });
+  </script>
+
+
+
+</body>
+
+</html>

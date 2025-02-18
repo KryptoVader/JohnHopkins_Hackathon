@@ -1,0 +1,375 @@
+<%
+  // Sample data for hackathon demonstration
+  var nurseName = "Nurse Jane Doe";
+  var patient = {
+    name: "John Doe",
+    id: "P12345",
+    room: "ICU-01",
+    doctor: "Dr. Smith",
+    status: "Stable",
+    vitals: {
+      heartRate: 72,
+      oxygen: 98,
+      bp: "120/80",
+      temp: 37.0
+    }
+  };
+  var instructions = [
+    {
+      bgColor: "bg-green-100",
+      textColor: "text-green-800",
+      title: "Administer Medication",
+      lastUpdated: "2025-01-31",
+      description: "Give 500mg of Paracetamol every 6 hours."
+    },
+    {
+      bgColor: "bg-yellow-100",
+      textColor: "text-yellow-800",
+      title: "Monitor Vitals",
+      lastUpdated: "2025-01-30",
+      description: "Check patient's vitals every hour."
+    }
+  ];
+  var tasks = [
+    {
+      title: "Check IV Line",
+      frequency: "Every 4 hours",
+      completed: false
+    },
+    {
+      title: "Measure Blood Pressure",
+      frequency: "Every 2 hours",
+      completed: false
+    }
+  ];
+%>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Patient Details - Medical Staff View</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg fixed w-full z-50">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between h-20">
+        <div class="flex items-center">
+          <a href="/ward" class="text-blue-600 hover:text-blue-800 mr-2">
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <i class="fas fa-heartbeat text-red-500 text-3xl mr-2"></i>
+          <span class="text-gray-800 text-2xl font-bold">Medi<span class="text-red-500">Care</span> ICU</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <!-- Mark nurse element with an id -->
+          <span id="nurseName" class="text-gray-600">
+            Nurse: <%= nurseName %>
+          </span>
+          <button class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition duration-300">
+            Mark as Attended
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Patient Info Header -->
+  <div class="pt-28 pb-10 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div class="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center">
+            <i class="fas fa-user text-4xl text-gray-400"></i>
+          </div>
+          <div>
+            <h1 id="patientName" class="text-2xl font-bold text-gray-900">
+              <%= patient && patient.name ? patient.name : "" %>
+            </h1>
+            <div class="flex space-x-4 text-sm text-gray-600">
+              <span id="patientId">
+                <i class="fas fa-hospital-user mr-2"></i>Patient ID: #<%= patient && patient.id ? patient.id : "" %>
+              </span>
+              <span id="patientRoom">
+                <i class="fas fa-bed mr-2"></i>Room: <%= patient && patient.room ? patient.room : "" %>
+              </span>
+              <span id="patientDoctor">
+                <i class="fas fa-user-md mr-2"></i>Dr. <%= patient && patient.doctor ? patient.doctor : "" %>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="text-right">
+            <div class="text-sm text-gray-600">Status</div>
+            <div id="patientStatus" class="text-green-500 font-semibold">
+              <%= patient && patient.status ? patient.status : "" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="py-8">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Detailed Vitals Section -->
+        <div class="col-span-2">
+          <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-6">Detailed Vital Signs</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Heart Rate -->
+              <div class="bg-red-50 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center">
+                    <i class="fas fa-heartbeat text-red-500 text-xl mr-2"></i>
+                    <span class="text-gray-600">Heart Rate</span>
+                  </div>
+                  <div id="heartRateValue" class="text-2xl font-bold text-red-500">
+                    <%= patient && patient.vitals && patient.vitals.heartRate ? patient.vitals.heartRate : "" %>
+                    <span class="text-sm font-normal">BPM</span>
+                  </div>
+                </div>
+                <div class="h-40">
+                  <canvas id="heartRateChart"></canvas>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">Normal Range: 60-100 BPM</div>
+              </div>
+
+              <!-- Blood Oxygen -->
+              <div class="bg-blue-50 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center">
+                    <i class="fas fa-lungs text-blue-500 text-xl mr-2"></i>
+                    <span class="text-gray-600">SpO2</span>
+                  </div>
+                  <div id="oxygenValue" class="text-2xl font-bold text-blue-500">
+                    <%= patient && patient.vitals && patient.vitals.oxygen ? patient.vitals.oxygen : "" %>
+                    <span class="text-sm font-normal">%</span>
+                  </div>
+                </div>
+                <div class="h-40">
+                  <canvas id="oxygenChart"></canvas>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">Normal Range: 95-100%</div>
+              </div>
+
+              <!-- Blood Pressure -->
+              <div class="bg-purple-50 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center">
+                    <i class="fas fa-stethoscope text-purple-500 text-xl mr-2"></i>
+                    <span class="text-gray-600">Blood Pressure</span>
+                  </div>
+                  <div id="bpValue" class="text-2xl font-bold text-purple-500">
+                    <%= patient && patient.vitals && patient.vitals.bp ? patient.vitals.bp : "" %>
+                    <span class="text-sm font-normal">mmHg</span>
+                  </div>
+                </div>
+                <div class="h-40">
+                  <canvas id="bpChart"></canvas>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">Normal Range: 90/60 - 120/80 mmHg</div>
+              </div>
+
+              <!-- Temperature -->
+              <div class="bg-orange-50 p-4 rounded-xl">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="flex items-center">
+                    <i class="fas fa-thermometer-half text-orange-500 text-xl mr-2"></i>
+                    <span class="text-gray-600">Temperature</span>
+                  </div>
+                  <div id="tempValue" class="text-2xl font-bold text-orange-500">
+                    <%= patient && patient.vitals && patient.vitals.temp ? patient.vitals.temp : "" %>
+                    <span class="text-sm font-normal">°C</span>
+                  </div>
+                </div>
+                <div class="h-40">
+                  <canvas id="tempChart"></canvas>
+                </div>
+                <div class="text-xs text-gray-500 mt-2">Normal Range: 36.5-37.5°C</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Doctor's Instructions & Tasks -->
+        <div>
+          <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-6">Doctor's Instructions</h2>
+            <div class="space-y-4" id="instructionsContainer">
+              <% if (instructions && instructions.length) { %>
+                <% instructions.forEach(function(instruction) { %>
+                  <div class="<%= instruction.bgColor %> p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-2">
+                      <div class="font-semibold <%= instruction.textColor %>">
+                        <%= instruction.title %>
+                      </div>
+                      <span class="text-sm text-gray-600">Last Updated: <%= instruction.lastUpdated %></span>
+                    </div>
+                    <div class="text-sm text-gray-700">
+                      <%= instruction.description %>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } %>
+            </div>
+
+            <!-- Task List -->
+            <div class="mt-6">
+              <h3 class="text-lg font-semibold mb-4">Tasks</h3>
+              <div class="space-y-3" id="tasksContainer">
+                <% if (tasks && tasks.length) { %>
+                  <% tasks.forEach(function(task) { %>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <div class="font-medium">
+                          <%= task.title %>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                          <%= task.frequency %>
+                        </div>
+                      </div>
+                      <button class="<%= task.completed ? 'text-green-600 hover:text-green-700' : 'text-gray-400 hover:text-gray-600' %>">
+                        <i class="fas fa-check-circle"></i>
+                      </button>
+                    </div>
+                  <% }); %>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js and Vital Signs Monitor Script -->
+  <script>
+    // vitalSignsMonitor.js
+
+    class VitalSignsMonitor {
+      constructor() {
+        // Create charts for each vital sign.
+        this.heartRateChart = this.createChart('heartRateChart', 'BPM', [70, 72, 75, 74, 73]);
+        this.oxygenChart = this.createChart('oxygenChart', '%', [97, 98, 98, 99, 98]);
+        // For blood pressure, we’ll chart only the systolic value.
+        this.bpChart = this.createChart('bpChart', 'mmHg', [115, 117, 120, 118, 116]);
+        this.tempChart = this.createChart('tempChart', '°C', [36.8, 37.0, 37.2, 37.1, 37.2]);
+      }
+
+      /**
+       * Creates a line chart on the canvas with the given id.
+       * @param {string} canvasId - The id of the canvas element.
+       * @param {string} label - The label for the dataset.
+       * @param {number[]} initialData - An array of initial data points.
+       * @returns {Chart} - A Chart.js chart instance.
+       */
+      createChart(canvasId, label, initialData) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        return new Chart(ctx, {
+          type: 'line',
+          data: {
+            // Create dummy labels for each data point.
+            labels: initialData.map((_, index) => index + 1),
+            datasets: [{
+              label: label,
+              data: initialData,
+              fill: false,
+              borderColor: this.getRandomColor(),
+              tension: 0.1
+            }]
+          },
+          options: {
+            animation: false,
+            scales: {
+              y: {
+                beginAtZero: false
+              }
+            },
+            plugins: {
+              legend: {
+                display: false
+              }
+            }
+          }
+        });
+      }
+
+      /**
+       * Generates a random hex color.
+       * @returns {string} A hex color string.
+       */
+      getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+      /**
+       * Updates a chart by appending new data and removing the oldest.
+       * @param {Chart} chart - The Chart.js instance.
+       * @param {number|string} newData - The new data point.
+       */
+      updateChart(chart, newData) {
+        // Append the new data point.
+        chart.data.datasets[0].data.push(newData);
+        // Remove the oldest data point.
+        chart.data.datasets[0].data.shift();
+        // Update labels to keep the same count.
+        chart.data.labels.push(chart.data.labels.length + 1);
+        chart.data.labels.shift();
+        chart.update('none'); // update without animation
+      }
+
+      /**
+       * Start updating the vital signs every few seconds.
+       */
+      start() {
+        // Update the vital signs every 2 seconds.
+        setInterval(() => {
+          // Generate simulated values within normal ranges:
+          const heartRate = Math.floor(Math.random() * (100 - 60 + 1)) + 60;
+          const oxygen = Math.floor(Math.random() * (100 - 95 + 1)) + 95;
+          // For blood pressure, generate a systolic and diastolic value.
+          const systolic = Math.floor(Math.random() * (120 - 90 + 1)) + 90;
+          const diastolic = Math.floor(Math.random() * (80 - 60 + 1)) + 60;
+          const bp = `${systolic}/${diastolic}`;
+          const temp = (Math.random() * (37.5 - 36.5) + 36.5).toFixed(1);
+
+          // Update the displayed values on the page.
+          document.getElementById('heartRateValue').childNodes[0].textContent = heartRate;
+          document.getElementById('oxygenValue').childNodes[0].textContent = oxygen;
+          document.getElementById('bpValue').childNodes[0].textContent = bp;
+          document.getElementById('tempValue').childNodes[0].textContent = temp;
+
+          // Update the charts. For the blood pressure chart, we’re updating with the systolic value.
+          this.updateChart(this.heartRateChart, heartRate);
+          this.updateChart(this.oxygenChart, oxygen);
+          this.updateChart(this.bpChart, systolic);
+          this.updateChart(this.tempChart, temp);
+
+        }, 2000); // Update interval in milliseconds.
+      }
+    }
+
+    // When the document is loaded, create and start the monitor.
+    document.addEventListener('DOMContentLoaded', () => {
+      const monitor = new VitalSignsMonitor();
+      monitor.start();
+    });
+  </script>
+</body>
+
+</html>

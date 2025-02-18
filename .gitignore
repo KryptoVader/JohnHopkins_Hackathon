@@ -1,2 +1,8 @@
 /node_modules
 .env
+/JHU Chatbot/archive
+test_chat.py
+/saved_model
+/JHU Chatbot/__pycache__
+/JHU Chatbot/archive/medquad.csv
+fine_tunning.ipynb
